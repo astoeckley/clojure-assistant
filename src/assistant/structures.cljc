@@ -11,14 +11,17 @@
   (:require [clojure.core]))
 
 (defn as-pack?
-  "A 'pack' is a map of keys of any type to predicate functions. A predicate accepts one argument and returns a truthy value. The predicates specify the allowed data to be stored in the pack with each key.
+  "A 'pack' is a map of keys of any type to predicate functions. A predicate accepts one argument and returns a truthy value. 
+   The predicates specify the allowed data to be stored in the pack with each key.
 
    Example pack:
 
    (def cool-toy {:minimum-age (every-pred number? pos?) 
                   :color keyword?})
 
-   as-pack? accepts the pack map and any other value and returns true if the value meets the specifications of the provided pack. Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require that *only* the pack's keys are included in the provided value."
+   as-pack? accepts the pack map and any other value and returns true if the value meets the specifications of the provided pack. 
+   Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require 
+   that *only* the pack's keys are included in the provided value."
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
@@ -53,7 +56,10 @@
   (and (map? explanation) (vector? invalid) (vector? extra) (= 2 (count explanation))))
 
 (defn explain-pack
-  "This is used by as-pack and is-pack macros to provide helpful assertion errors. Probably does not need to be called directly, though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from the provided value that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, but never nil. :invalid means the values do not pass the pack's predicates. :extra shows the additional entries not covered by the pack."
+  "This is used by as-pack and is-pack macros to provide helpful assertion errors. Probably does not need to be called directly, 
+   though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from the provided value 
+   that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, but never nil. :invalid means 
+   the values do not pass the pack's predicates. :extra shows the additional entries not covered by the pack."
   [pack v]
   {:pre  [(map? pack)]
    :post [(explanation? %)]}
@@ -87,7 +93,10 @@
        (empty? (:extra explanation))))
 
 (defmacro as-pack
-  "Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, which is just an ordinary map (see as-pack? doc string). When *assert* is on, it will assert that the value passes as-pack? and then return it. If it does not pass, the assertion failure shows the offending keys and values. If *assert* is off, as-pack does nothing."
+  "Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, 
+   which is just an ordinary map (see as-pack? doc string). When *assert* is on, it will assert that the value passes as-pack? 
+   and then return it. If it does not pass, the assertion failure shows the offending keys and values. If *assert* is off, as-pack 
+   does nothing."
   [pack v]
   (if *assert*
     `(let [ret#       ~v
@@ -111,7 +120,8 @@
     v))
 
 (defmacro defpack
-  "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code more clear to explicitly show that the map you are creating will be used as a pack.
+  "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code 
+   more clear to explicitly show that the map you are creating will be used as a pack.
 
    For example:
 
@@ -123,7 +133,8 @@
    (defn as-toy? [v] (as-pack? toy v))
    (defn is-toy? [v] (is-pack? toy v))
 
-   It will not create new macros. Because macros which emit other macros are tasks reserved for others. (hint: ClojureScript is supported too.)"
+   It will not create new macros. Because macros which emit other macros are tasks reserved for others. (hint: ClojureScript is 
+   supported too.)"
   [packname packmap]
   {:pre [symbol? packname]}
   (let [as-name?  (symbol (str "as-" packname "?"))

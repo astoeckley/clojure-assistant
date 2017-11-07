@@ -16,7 +16,7 @@
 (defmacro when-asserts
   "Evaluates the forms only when *assert* is true. Always returns nil. Is a no-op if *assert* is false -- no code is emmitted. 
 
-In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions."
+   In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions."
   [& forms]
   (when *assert* `(do ~@forms nil)))
 
