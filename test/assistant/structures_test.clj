@@ -112,12 +112,7 @@
     (is (false? (as-toy? {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar})))
     (is (true? (as-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (thrown? AssertionError (is-toy {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= {:minimum-age 5 :name "andrew" :size 8 :color :red} (is-toy {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (thrown? AssertionError (as-toy {:minimum-age :yo :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
-           (as-toy {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
+    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
 
 (set! *assert* false)
 
@@ -200,15 +195,6 @@
     (is (false? (as-toy? {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar})))
     (is (true? (as-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
-           (is-toy {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= {:minimum-age 5 :name "andrew" :size 8 :color :red} (is-toy {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (= {:minimum-age :yo :name "andrew" :size 8 :color :red :foo :bar}
-           (as-toy {:minimum-age :yo :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
-           (as-toy {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
-    (is (= 4 (as-toy 4)))
-    (is (= nil (as-toy (get {} :a))))))
+    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
 
 (set! *assert* true)

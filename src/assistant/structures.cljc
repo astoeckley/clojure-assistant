@@ -122,7 +122,7 @@
    (defn as-toy? [v] (as-pack? toy v))
    (defn is-toy? [v] (is-pack? toy v))
 
-   It will also create the macros as-toy and is-toy, similarly."
+   It will not create new macros. Because macros which emit other macros are tasks reserved for others..."
 
   [packname packmap]
   {:pre [symbol? packname]}
@@ -139,10 +139,4 @@
          (as-pack? ~packname ~args-name))
        (defn ~is-name?
          [~args-name]
-         (is-pack? ~packname ~args-name))
-       (defmacro ~is-name
-         [~args-name]
-         `(is-pack ~'~packname ~~args-name))
-       (defmacro ~as-name
-         [~args-name]
-         `(as-pack ~'~packname ~~args-name)))))
+         (is-pack? ~packname ~args-name)))))
