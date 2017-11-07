@@ -13,7 +13,10 @@
 ;; This macro allows ClojureScript code to access the compile-time value of *assert*
 (defmacro asserts? [] *assert*)
 
-(defmacro when-asserts [& forms] (when *assert* `(do ~@forms nil)))
+(defmacro when-asserts
+  "Evaluates the forms only when *assert* is true. Always returns nil. Is a no-op if *assert* is false -- no code is emmitted. In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions."
+  [& forms]
+  (when *assert* `(do ~@forms nil)))
 
 (defmacro as
   
@@ -23,9 +26,9 @@
   or
   2. (as some-predicate-fn some-expression-or-value)
 
-   If *assert* is off, this is a no-op -- it just passes through the expression-or-value ('a' if there is no 'b', or 'b'). In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions.
+   If *assert* is false, this is a no-op -- it just passes through the expression-or-value ('a' if there is no 'b', or 'b'). In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions.
 
-   If *assert* is on and there is no predicate-fn, it will just assert the expression and then return it (unlike normal assert which always returns nil). Useful for making sure your gets and get-ins and keyword functions are actually returning something non-nil, but without having to separately bind then assert them. 
+   If *assert* is on and there is no predicate-fn, it will just assert the expression and then return it (unlike normal assert which always returns nil). Useful for making sure your gets and get-ins and keyword functions are actually returning something non-nil, but without having to separately bind then assert them: just wrap them in 'as'.
 
    If there is a predicate it will first assert the (a b) expression, then return just 'b'. If the predicate fails, then the expression, it's evaluated value, and the predicate are all shown in the assertion message.
 
@@ -37,8 +40,12 @@
    Ensure a value is an int and is odd:
    (as (every-pred int? odd?) (get some-map :some-number))
 
+   Remember, in production code, this is compiled just as (get some-map :some-number) with nothing else wrapping it.
+
    Ensure a value is 35:
-   (as #(= 35 %) some-value-or-expression)"
+   (as #(= 35 %) some-value-or-expression)
+
+   If nil or false are valid possibilities, you can use combinations of 'or', 'nil?' and 'false?' in your predicate function as desired. These are just normal Clojure functions, no magic."
   
   [a & [b :as rests]]
   (let [num-b (count rests)]
