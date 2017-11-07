@@ -28,7 +28,13 @@ Require in CLJ:
 
 Require in CLJS:
 
- ```[assistant.structures :as ass :include-macros true ..(etc)..]```
+```[assistant.structures :as ass :include-macros true ..(etc)..]```
+
+```[assistant.asserts ...]```
+
+### PRs, Issues
+
+Sure.
 
 ### License
 
