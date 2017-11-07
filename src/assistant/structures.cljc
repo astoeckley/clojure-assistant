@@ -29,6 +29,7 @@
         _ false)))
 
 (defn keys-match?
+  "Questions if the pack and the value have the exact same keys, with no extra keys in one that are not in the other. Used by is-pack?"
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
@@ -52,7 +53,7 @@
   (and (map? explanation) (vector? invalid) (vector? extra) (= 2 (count explanation))))
 
 (defn explain-pack
-  "Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from the provided value that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, but never nil. :invalid means the values do not pass the pack's predicates. :extra shows the additional entries not covered by the pack."
+  "This is used by as-pack and is-pack macros to provide helpful assertion errors. Probably does not need to be called directly, though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from the provided value that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, but never nil. :invalid means the values do not pass the pack's predicates. :extra shows the additional entries not covered by the pack."
   [pack v]
   {:pre  [(map? pack)]
    :post [(explanation? %)]}
@@ -97,7 +98,7 @@
     v))
 
 (defmacro is-pack
-  "Like as-pack, but tests with is-pack? instead of as-pack?"
+  "Just like as-pack, but tests with is-pack? instead of as-pack?"
   [pack v]
   (if *assert*
     `(let [ret#       ~v
@@ -110,7 +111,7 @@
     v))
 
 (defmacro defpack
-  "This is a convenience macro that generates several defs at once.
+  "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code more clear to explicitly show that the map you are creating will be used as a pack.
 
    For example:
 
@@ -122,8 +123,7 @@
    (defn as-toy? [v] (as-pack? toy v))
    (defn is-toy? [v] (is-pack? toy v))
 
-   It will not create new macros. Because macros which emit other macros are tasks reserved for others..."
-
+   It will not create new macros. Because macros which emit other macros are tasks reserved for others. (hint: ClojureScript is supported too.)"
   [packname packmap]
   {:pre [symbol? packname]}
   (let [as-name?  (symbol (str "as-" packname "?"))
