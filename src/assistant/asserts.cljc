@@ -20,6 +20,20 @@
   [& forms]
   (when *assert* `(do ~@forms nil)))
 
+(defn log*
+  "Cross-environment logging. JS requires console.log, not println, for Chrome Dev Tools assistance."
+  [& logs]
+  (apply
+   #?@(:clj (println)
+       :cljs (js/console.log))
+   logs))
+
+(defmacro log
+  "Logs only when *assert* is true. In CLJS, uses JS console, not println, for Dev Tools support."
+  [& logs]
+  (when *assert*
+    `(log* ~@logs)))
+
 (defmacro as
   
   "A better assert. Two arities are possible:
