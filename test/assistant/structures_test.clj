@@ -103,7 +103,8 @@
     (is (thrown? AssertionError (is-pack pack1 pack1-as2)))
     (is (thrown? AssertionError (is-pack pack1 {})))
     (is (thrown? AssertionError (is-pack pack1 nil)))
-    (is (thrown? AssertionError (is-pack pack1 99))))
+    (is (thrown? AssertionError (is-pack pack1 99)))
+    (is (not= 5 (clojure.walk/macroexpand-all '(is-pack pack1 5)))))
   (testing "defpack"
     (is (map? toy))
     (is (fn? as-toy?))
@@ -186,7 +187,13 @@
     (is (= pack1-as2 (is-pack pack1 pack1-as2)))
     (is (= {} (is-pack pack1 {})))
     (is (nil? (is-pack pack1 nil)))
-    (is (= 99 (is-pack pack1 99))))
+    (is (= 99 (is-pack pack1 99)))
+    (is (= 5 (binding [*assert* false]
+               (clojure.walk/macroexpand-all '(is-pack pack1 5)))))
+    (is (= '(get {} :a)
+           (binding [*assert* false]
+             (clojure.walk/macroexpand-all 
+              '(is-pack pack1 (get {} :a)))))))
   (testing "defpack"
     (is (map? toy))
     (is (fn? as-toy?))
