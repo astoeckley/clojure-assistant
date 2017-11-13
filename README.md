@@ -24,8 +24,6 @@ Require in CLJ:
 
 ```[assistant.asserts ...]```
 
-(I usually ```:refer :all```)
-
 Require in CLJS:
 
 ```[assistant.structures :as ass :include-macros true ..(etc)..]```
