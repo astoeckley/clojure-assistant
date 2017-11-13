@@ -34,6 +34,20 @@
   (when *assert*
     `(log* ~@logs)))
 
+(defmacro logex
+  "Logs the provided expression, quoting the expression followed by its evaluation."
+  [v]
+  (when *assert*
+    `(log* '~v ~v)))
+
+(defmacro logexs
+  "Logs all the provided expressions, quoting the expressions followed by their evaluations."
+  [& vs]
+  (when *assert*
+    `(do
+       ~@(for [v vs]
+           `(log* '~v ~v)))))
+
 (defmacro as
   
   "A better assert. Two arities are possible:

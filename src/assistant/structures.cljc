@@ -133,8 +133,7 @@
    (defn as-toy? [v] (as-pack? toy v))
    (defn is-toy? [v] (is-pack? toy v))
 
-   It will not create new macros. Because macros which emit other macros are tasks reserved for others. (hint: ClojureScript is 
-   supported too.)"
+   It will not create new macros. Because macros which emit other defmacros are tasks reserved for others. (hint: ClojureScript files are supported; you should be able to write a defpack in cljs source.)"
   [packname packmap]
   {:pre [symbol? packname]}
   (let [as-name?  (symbol (str "as-" packname "?"))
