@@ -10,16 +10,16 @@
 (ns assistant.structures
   (:require [clojure.core]))
 
+;; A 'pack' is a map of keys of any type to predicate functions. A predicate accepts one argument and returns a truthy value. 
+;; The predicates specify the allowed data to be stored in the pack with each key.
+;;
+;; Example pack:
+;; 
+;; (def cool-toy {:minimum-age (every-pred number? pos?) 
+;;                :color keyword?})
+
 (defn as-pack?
-  "A 'pack' is a map of keys of any type to predicate functions. A predicate accepts one argument and returns a truthy value. 
-   The predicates specify the allowed data to be stored in the pack with each key.
-
-   Example pack:
-
-   (def cool-toy {:minimum-age (every-pred number? pos?) 
-                  :color keyword?})
-
-   as-pack? accepts the pack map and any other value and returns true if the value meets the specifications of the provided pack. 
+  "Accepts a pack map and any other value and returns true if the value meets the specifications of the provided pack. 
    Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require 
    that *only* the pack's keys are included in the provided value."
   [pack v]
@@ -94,7 +94,7 @@
 
 (defmacro as-pack
   "Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, 
-   which is just an ordinary map (see as-pack? doc string). When *assert* is on, it will assert that the value passes as-pack? 
+   which is just an ordinary map (as describe at top). When *assert* is on, it will assert that the value passes as if by as-pack? 
    and then return it. If it does not pass, the assertion failure shows the offending keys and values. If *assert* is off, as-pack 
    does nothing."
   [pack v]
@@ -107,7 +107,7 @@
     v))
 
 (defmacro is-pack
-  "Just like as-pack, but tests with is-pack? instead of as-pack?"
+  "Just like as-pack, but tests like is-pack? instead of as-pack?"
   [pack v]
   (if *assert*
     `(let [ret#       ~v
