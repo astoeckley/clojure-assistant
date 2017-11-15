@@ -69,7 +69,11 @@
     (is (false? (as-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
                            :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
     (is (true? (as-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
-                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}})))
+    (is (false? (as-pack? toys {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                                :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (true? (as-pack? toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                               :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
@@ -115,7 +119,13 @@
     (is (false? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
                            :toy2 {:minimum-age 5 :name "bobby" :size 8 :color :red :foo :bar}})))
     (is (true? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
-                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}})))
+    (is (false? (is-pack? toys {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                                :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (false? (is-pack? toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                                :toy2 {:minimum-age 5 :name "bobby" :size 8 :color :red :foo :bar}})))
+    (is (true? (is-pack? toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                               :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "explain-pack"
     (is (= no-explain (explain-pack pack1 pack1-is1)))
     (is (= no-explain (explain-pack pack1 pack1-is2)))
@@ -240,8 +250,8 @@
     (is (false? (is-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2})))
     (is (false? (is-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
                            :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
-    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
-                           :toy2 {:minimum-age 5 :name "bobby" :size 8 :color :red :foo :bar}})))
+    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                           :toy2 {:minimum-age 5 :name "bobby" :size :foo :color :red}})))
     (is (true? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
                           :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "explain-pack"
