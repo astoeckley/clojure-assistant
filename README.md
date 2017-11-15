@@ -2,7 +2,7 @@
 
 Simple but effective validation on any kind of data and types, without any fuss or learning curve.
 
-I don't have the time to write up a nice Readme, but the small amount of code in this library is short and decently documented, and the tests also make it clear. Just look at it to remove any mystery.
+I don't have the time to write up a nice Readme, but the small amount of code in this library is short and decently documented, and the tests also make it clear. Just look at it to remove any mystery. For example, [here is all you need to know about shaping maps](https://github.com/astoeckley/clojure-assistant/blob/master/src/assistant/structures.cljc#L12).
 
 ### Motivation
 
@@ -16,7 +16,7 @@ Clojure Assistant is just normal maps and functions for the most part.
 
 Clojars:  
 
-```[nl.balconystudio/clojure-assistant "0.1.1.6"]```
+```[nl.balconystudio/clojure-assistant "0.1.1.7"]```
 
 Require in CLJ: 
 
