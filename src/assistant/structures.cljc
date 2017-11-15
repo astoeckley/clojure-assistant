@@ -84,13 +84,19 @@
     (let [invalid (reduce
                    (fn [ret [k func]]
                      (let [found (get v k)]
-                       (try
-                         (if (func found)
-                           ret
-                           (conj ret [k found]))
-                         (catch #?(:clj Exception
-                                   :cljs :default)
-                             _ (conj ret [k found])))))
+                       (if (map? func)
+                         (let [nested-explain (explain-pack func found)
+                               invalids       (:invalid nested-explain)]
+                           (if (empty? invalids)
+                             ret
+                             (conj ret [k invalids])))
+                         (try
+                           (if (func found)
+                             ret
+                             (conj ret [k found]))
+                           (catch #?(:clj Exception
+                                     :cljs :default)
+                               _ (conj ret [k found]))))))
                    [] pack)
           extra   (vec (remove (fn [[k v]] (get pack k)) v))]
       {:invalid invalid :extra extra})
