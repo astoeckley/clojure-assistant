@@ -10,13 +10,16 @@
 (ns assistant.structures
   (:require [clojure.core]))
 
-;; A 'pack' is a map of keys of any type to predicate functions. A predicate accepts one argument and returns a truthy value. 
+;; A 'pack' is a map of keys of any type to predicate functions or other packs.
+;; A predicate accepts one argument and returns a truthy value. 
 ;; The predicates specify the allowed data to be stored in the pack with each key.
 ;;
 ;; Example pack:
 ;; 
 ;; (def cool-toy {:minimum-age (every-pred number? pos?) 
 ;;                :color keyword?})
+;;
+;; (def two-toys {:toy1 cool-toy :toy2 cool-toy}
 
 (defn as-pack?
   "Accepts a pack map and any other value and returns true if the value meets the specifications of the provided pack. 
@@ -26,7 +29,10 @@
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
   (try
-    (every? (fn [[k func]] (func (get v k))) pack)
+    (every? (fn [[k func]]
+              (if (map? func)
+                (as-pack? func (get v k))
+                (func (get v k)))) pack)
     (catch #?(:clj Exception
               :cljs :default)
         _ false)))
@@ -120,7 +126,9 @@
     v))
 
 (defmacro pack
-  "Returns a predicate function like is-pack? for the supplied pack map, while also validating the predicate's argument with 
+  "This macro is no longer necessary with the new work for using maps in place of predicates in a pack.
+
+   Returns a predicate function like is-pack? for the supplied pack map, while also validating the predicate's argument with 
    is-pack for the benefit of good error messages when *assert* is true. Example:
 
    (pack toy) => #(is-pack? toy (is-pack toy %))

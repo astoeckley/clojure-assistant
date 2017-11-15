@@ -9,6 +9,10 @@
             :c string?
             :d (every-pred pos? #(< % 10))})
 
+(def pack2 {:pack pack1})
+
+(defpack pack3 {:pack2 pack2 :pack1 pack1})
+
 (def no-explain {:invalid [] :extra []})
 (def pack1-is1 {:a 1 :b 1.0 :d 1 :c "hello"})
 (def pack1-is2 {:d 9.9 :b -0.001 :a 1000.1 :c ""})
@@ -28,6 +32,8 @@
               :size        #(and (<= % 10) (>= % 5))
               :name        string?})
 
+(defpack toys {:toy1 toy :toy2 toy})
+
 (deftest asserts-on
   (testing "as-pack?"
     (is (as-pack? {#{1 2} #{:a :b}} {#{2 1} :b :c 99}))
@@ -44,7 +50,18 @@
     (is (false? (as-pack? pack1 (dissoc pack1-is1 :d))))
     (is (false? (as-pack? pack1 pack1-not1)))
     (is (false? (as-pack? pack1 pack1-not2)))
-    (is (thrown? AssertionError (as-pack? nil pack1-is1))))
+    (is (thrown? AssertionError (as-pack? nil pack1-is1)))
+    (is (as-pack? pack2 {:pack pack1-is1}))
+    (is (as-pack? pack2 {:pack pack1-is2}))
+    (is (as-pack? pack2 {:pack pack1-as1}))
+    (is (as-pack? pack2 {:pack pack1-as2}))
+    (is (false? (as-pack? pack2 {:whatever pack1-is2})))
+    (is (false? (as-pack? pack2 {:pack {}})))
+    (is (false? (as-pack? pack2 {:pack pack2})))
+    (is (as-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
+    (is (as-pack? pack3 {:pack2 {:pack pack1-as2} :pack1 pack1-is2}))
+    (is (false? (as-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
+    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
@@ -152,7 +169,18 @@
     (is (false? (as-pack? pack1 {:a 1})))
     (is (false? (as-pack? pack1 (dissoc pack1-is1 :d))))
     (is (false? (as-pack? pack1 pack1-not1)))
-    (is (false? (as-pack? pack1 pack1-not2))))
+    (is (false? (as-pack? pack1 pack1-not2)))
+    (is (as-pack? pack2 {:pack pack1-is1}))
+    (is (as-pack? pack2 {:pack pack1-is2}))
+    (is (as-pack? pack2 {:pack pack1-as1}))
+    (is (as-pack? pack2 {:pack pack1-as2}))
+    (is (false? (as-pack? pack2 {:whatever pack1-is2})))
+    (is (false? (as-pack? pack2 {:pack {}})))
+    (is (false? (as-pack? pack2 {:pack pack2})))
+    (is (as-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
+    (is (as-pack? pack3 {:pack2 {:pack pack1-as2} :pack1 pack1-is2}))
+    (is (false? (as-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
+    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
