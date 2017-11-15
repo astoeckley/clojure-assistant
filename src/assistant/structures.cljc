@@ -12,13 +12,41 @@
 ;; A 'pack' is a map of keys of any type to predicate functions or other packs.
 ;; A predicate accepts one argument and returns a truthy value. 
 ;; The predicates or packs specify the allowed data to be stored in the pack with each key.
-;;
+
 ;; Example pack:
-;; 
+
 ;; (def cool-toy {:minimum-age (every-pred number? pos?) 
 ;;                :color keyword?})
-;;
+
 ;; (def two-toys {:toy1 cool-toy :toy2 cool-toy}
+
+;; When packs are defined, the following functions and macros can test or assert that other maps pass these definitions.
+;; Choose among true/false predicates or assertions that simply pass on the tested map after asserting it is correct.
+
+;; The tools are:
+
+;; (as-pack? cool-toy {:minimum-age 5 :color :red :other :entry}) => true
+
+;; The as-pack? predicate returns true if the map at least meets the requirements, even if the map has additional keys other
+;; than those specified in the pack. It can be used *as* that pack object.
+
+;; (is-pack? cool-toy {:minimum-age 5 :color :red :other :entry}) => false
+
+;; is-pack? is like as-pack? but with the additional restriction that there can be no extra keys. It *is* that object.
+
+;; (as-pack cool-toy some-map)
+
+;; This is not a predicate test, as-pack is an *assertion* that the map can be used as a cool-toy. If it passes, the map
+;; simply flows through. If *assert* is false, this expression does nothing and just compiles to some-map.
+
+;; (is-pack cool-toy some-map)
+
+;; Also an assertion, but is-pack tests in the same way as is-pack?
+
+;; (defpack person {:name string? :age (every-pred number? pos?)})
+
+;; Used like this, the macro simply creates a map as if by def instead of defpack. If a last argument of true is passed,
+;; it will generate additional convenience functions which wrap as-pack? and is-pack? See more explanation below.
 
 (defn keys-match?
   "Questions if the pack and the value have the exact same keys, with no extra keys in one that are not in the other."
@@ -76,7 +104,8 @@
    directly, though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from 
    the provided value that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, 
    but never nil. :invalid means the values do not pass the pack's predicates. :extra shows the additional entries not 
-   covered by the pack."
+   covered by the pack. Nested packs are tested and :invalid and :extra may contain nested vectors which act as paths to
+   the nested keys and values that failed the pack specification."
   [pack v]
   {:pre  [(map? pack)]
    :post [(explanation? %)]}
