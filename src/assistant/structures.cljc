@@ -21,24 +21,8 @@
 ;;
 ;; (def two-toys {:toy1 cool-toy :toy2 cool-toy}
 
-(defn as-pack?
-  "Accepts a pack map and any other value and returns true if the value meets the specifications of the provided pack. 
-   Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require 
-   that *only* the pack's keys are included in the provided value."
-  [pack v]
-  {:pre  [(map? pack)]
-   :post [(or (false? %) (true? %))]}
-  (try
-    (every? (fn [[k func]]
-              (if (map? func)
-                (as-pack? func (get v k))
-                (func (get v k)))) pack)
-    (catch #?(:clj Exception
-              :cljs :default)
-        _ false)))
-
 (defn keys-match?
-  "Questions if the pack and the value have the exact same keys, with no extra keys in one that are not in the other. Used by is-pack?"
+  "Questions if the pack and the value have the exact same keys, with no extra keys in one that are not in the other."
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
@@ -48,13 +32,40 @@
               :cljs :default)
         _ false)))
 
+(defn pack?
+  "Primarily used by as-pack? and is-pack?, this accepts a pack, a value to test, and a boolean compare-keys.
+   If compare-keys is true, the test will also use keys-match?"
+  [pack v compare-keys]
+  {:pre  [(map? pack) (or (false? compare-keys) (true? compare-keys))]
+   :post [(or (false? %) (true? %))]}
+  (and
+   (if compare-keys
+     (keys-match? pack v)
+     true)
+   (try
+     (every? (fn [[k func]]
+               (if (map? func)
+                 (pack? func (get v k) compare-keys)
+                 (func (get v k)))) pack)
+     (catch #?(:clj Exception
+               :cljs :default)
+         _ false))))
+
+(defn as-pack?
+  "Accepts a pack map and any other value and returns true if the value meets the specifications of the provided pack. 
+   Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require 
+   that *only* the pack's keys are included in the provided value."
+  [pack v]
+  {:pre  [(map? pack)]
+   :post [(or (false? %) (true? %))]}
+  (pack? pack v false))
+
 (defn is-pack?
   "Returns true if as-pack? is true and there are no additional keys in provided value."
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
-  (and (keys-match? pack v)
-       (as-pack? pack v)))
+  (pack? pack v true))
 
 (defn explanation?
   "A pack explanation is outlined in explain-pack, and this function checks that the explanation is in the correct format."

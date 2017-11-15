@@ -61,7 +61,12 @@
     (is (as-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
     (is (as-pack? pack3 {:pack2 {:pack pack1-as2} :pack1 pack1-is2}))
     (is (false? (as-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
-    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2}))))
+    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2})))
+    (is (false? (as-toys? {:a 1})))
+    (is (false? (as-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (true? (as-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
@@ -94,7 +99,20 @@
     (is (false? (is-pack? pack1 (dissoc pack1-is1 :d :b))))
     (is (false? (is-pack? pack1 pack1-not1)))
     (is (false? (is-pack? pack1 pack1-not2)))
-    (is (thrown? AssertionError (is-pack? nil pack1-is1))))
+    (is (thrown? AssertionError (is-pack? nil pack1-is1)))
+    (is (is-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
+    (is (false? (is-pack? pack3 {:a {} :pack2 {:pack pack1-is1} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack1 pack1-is1 :pack pack1-is1 :pack2 {:pack pack1-is1}})))
+    (is (is-pack? pack3 {:pack2 {:pack pack1-is1} :pack1 pack1-is2}))
+    (is (false? (is-pack? pack3 {:a nil :pack2 {:pack pack1-is1} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2})))
+    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name "bobby" :size 8 :color :red :foo :bar}})))
+    (is (true? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "pack"
     (is ((pack {#{1 2} #{:a :b}}) {#{2 1} :b}))
     (is ((pack pack1) pack1-is1))
@@ -180,7 +198,11 @@
     (is (as-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
     (is (as-pack? pack3 {:pack2 {:pack pack1-as2} :pack1 pack1-is2}))
     (is (false? (as-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
-    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2}))))
+    (is (false? (as-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2})))
+    (is (false? (as-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (true? (as-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
@@ -209,7 +231,20 @@
     (is (false? (is-pack? pack1 (dissoc pack1-is1 :a))))
     (is (false? (is-pack? pack1 (dissoc pack1-is1 :d :b))))
     (is (false? (is-pack? pack1 pack1-not1)))
-    (is (false? (is-pack? pack1 pack1-not2))))
+    (is (false? (is-pack? pack1 pack1-not2)))
+    (is (is-pack? pack3 {:pack1 pack1-is1 :pack2 {:pack pack1-is1}}))
+    (is (is-pack? pack3 {:pack2 {:pack pack1-is1} :pack1 pack1-is2}))
+    (is (false? (is-pack? pack3 {:a {} :pack2 {:pack pack1-is1} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack1 pack1-is1 :pack pack1-is1 :pack2 {:pack pack1-is1}})))
+    (is (false? (is-pack? pack3 {:a nil :pack2 {:pack pack1-is1} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack {:pack pack1-as2} :pack1 pack1-is2})))
+    (is (false? (is-pack? pack3 {:pack2 {:pack (dissoc pack1-is1 :d)} :pack1 pack1-is2})))
+    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
+    (is (false? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                           :toy2 {:minimum-age 5 :name "bobby" :size 8 :color :red :foo :bar}})))
+    (is (true? (is-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "pack"
     (is ((pack {#{1 2} #{:a :b}}) {#{2 1} :b}))
     (is ((pack pack1) pack1-is1))
