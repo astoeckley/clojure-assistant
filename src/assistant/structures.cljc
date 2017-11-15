@@ -115,32 +115,32 @@
   (and (empty? (:invalid explanation))
        (empty? (:extra explanation))))
 
-(defmacro as-pack
-  "Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, 
+(defmacro assert-pack
+  "Used by the as-pack and is-pack macros; should not be called directly.
+   Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, 
    which is just an ordinary map (as describe at top). When *assert* is on, it will assert that the value passes as if by as-pack? 
-   and then return it. If it does not pass, the assertion failure shows the offending keys and values. If *assert* is off, as-pack 
-   does nothing."
-  [pack v]
+   or is-pack? depending on explain-fn, and then return it. If it does not pass, the assertion failure shows the offending paths to
+   keys and their values. If *assert* is off, as-pack does nothing and just passes through the value."
+  [pack v explain-fn]
   (if *assert*
     `(let [ret#       ~v
            pack#      ~pack
            explained# (explain-pack pack# ret#)]
-       (assert (explained-as-pack? explained#) (str "Entries not matching pack " '~pack " are: " (:invalid explained#)))
+       (assert (~explain-fn explained#) (str "Paths not matching pack " '~pack
+                                             " are: INVALID: " (:invalid explained#)
+                                             " EXTRA: " (:extra explained#)))
        ret#)
     v))
 
-(defmacro is-pack
-  "Just like as-pack, but tests like is-pack? instead of as-pack?"
+(defmacro as-pack
+  "assert-pack based on a test like as-pack?"
   [pack v]
-  (if *assert*
-    `(let [ret#       ~v
-           pack#      ~pack
-           explained# (explain-pack pack# ret#)]
-       (assert (explained-is-pack? explained#) (str "Entries not matching pack " '~pack
-                                                    " are: INVALID: " (:invalid explained#)
-                                                    " EXTRA: " (:extra explained#)))
-       ret#)
-    v))
+  `(assert-pack ~pack ~v explained-as-pack?))
+
+(defmacro is-pack
+  "assert-pack based on a test like is-pack?"
+  [pack v]
+  `(assert-pack ~pack ~v explained-is-pack?))
 
 (defmacro defpack
   "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code 
