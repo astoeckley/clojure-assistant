@@ -15,13 +15,12 @@
 
 (defmacro when-asserts
   "Evaluates the forms only when *assert* is true. Always returns nil. Is a no-op if *assert* is false -- no code is emmitted. 
-
    In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions."
   [& forms]
   (when *assert* `(do ~@forms nil)))
 
 (defn log*
-  "Cross-environment logging. JS requires console.log, not println, for Chrome Dev Tools assistance."
+  "Cross-environment logging. JS requires console.log, not prn and friends, for Chrome Dev Tools assistance."
   [& logs]
   (apply
    #?@(:clj (prn)
@@ -29,13 +28,13 @@
    logs))
 
 (defmacro log
-  "Logs only when *assert* is true. In CLJS, uses JS console, not println, for Dev Tools support."
+  "Logs only when *assert* is true. In CLJS, uses JS console for Dev Tools support."
   [& logs]
   (when *assert*
     `(log* ~@logs)))
 
 (defmacro logx
-  "Log expressions, each on a line, with the quoted expression followed by its evaluation."
+  "Log expressions when *assert* is true, each on a line, with the quoted expression followed by its evaluation."
   [& vs]
   (when *assert*
     `(do
@@ -77,6 +76,7 @@
   as desired. These are just normal Clojure functions, no magic."
   
   [a & [b :as rests]]
+  
   (let [num-b (count rests)]
     (when (> num-b 1) (assert false "Your 'as' has too many arguments."))
     (if *assert*
