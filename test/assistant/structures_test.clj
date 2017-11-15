@@ -21,12 +21,7 @@
 (def pack1-as2 {:d 9.9 :b -0.001 :a 1000.1 :c "" :f ""})
 (def explain-pack1-as2 {:invalid [] :extra [[:f ""]]})
 (def pack1-not1 {:a 1 :b 1 :d 0 :c ""})
-(def explain-pack1-not1 {:invalid [[:b 1] [:d 0]] :extra []})
 (def pack1-not2 {})
-(def explain-pack1-not2 {:invalid [[:a nil] [:b nil]
-                                   [:c nil] [:d nil]]
-                         :extra   []})
-(def explain-all-missing explain-pack1-not2)
 
 (defpack toy {:minimum-age pos? :color keyword?
               :size        #(and (<= % 10) (>= % 5))
@@ -119,10 +114,7 @@
     (is (= no-explain (explain-pack pack1 pack1-is1)))
     (is (= no-explain (explain-pack pack1 pack1-is2)))
     (is (= explain-pack1-as1 (explain-pack pack1 pack1-as1)))
-    (is (= explain-pack1-as2 (explain-pack pack1 pack1-as2)))
-    (is (= explain-pack1-not1 (explain-pack pack1 pack1-not1)))
-    (is (= explain-pack1-not2 (explain-pack pack1 pack1-not2)))
-    (is (= explain-all-missing (explain-pack pack1 88))))
+    (is (= explain-pack1-as2 (explain-pack pack1 pack1-as2))))
   (testing "as-pack"
     (is (as-pack pack1 pack1-is1))
     (is (= pack1-is1 (as-pack pack1 pack1-is1)))
@@ -231,10 +223,7 @@
     (is (= no-explain (explain-pack pack1 pack1-is1)))
     (is (= no-explain (explain-pack pack1 pack1-is2)))
     (is (= explain-pack1-as1 (explain-pack pack1 pack1-as1)))
-    (is (= explain-pack1-as2 (explain-pack pack1 pack1-as2)))
-    (is (= explain-pack1-not1 (explain-pack pack1 pack1-not1)))
-    (is (= explain-pack1-not2 (explain-pack pack1 pack1-not2)))
-    (is (= explain-all-missing (explain-pack pack1 88))))
+    (is (= explain-pack1-as2 (explain-pack pack1 pack1-as2))))
   (testing "as-pack"
     (is (as-pack pack1 pack1-is1))
     (is (= pack1-is1 (as-pack pack1 pack1-is1)))

@@ -80,25 +80,29 @@
   {:pre  [(map? pack)]
    :post [(explanation? %)]}
   (if (map? v)
-    (let [invalid (reduce
-                   (fn [ret [k func]]
-                     (let [found (get v k)]
-                       (if (map? func)
-                         (let [nested-explain (explain-pack func found)
-                               invalids       (:invalid nested-explain)]
-                           (if (empty? invalids)
-                             ret
-                             (conj ret [k invalids])))
-                         (try
-                           (if (func found)
-                             ret
-                             (conj ret [k found]))
-                           (catch #?(:clj Exception
-                                     :cljs :default)
-                               _ (conj ret [k found]))))))
-                   [] pack)
-          extra   (vec (remove (fn [[k v]] (get pack k)) v))]
-      {:invalid invalid :extra extra})
+    (let [{:keys [invalid extra]} (reduce
+                                   (fn [{:keys [invalid extra] :as ret} [k func]]
+                                     (let [found (get v k)]
+                                       (if (map? func)
+                                         (let [{invalids :invalid extras :extra} (explain-pack func found)]
+                                           {:invalid
+                                            (if (empty? invalids)
+                                              invalid
+                                              (conj invalid [k invalids]))
+                                            :extra
+                                            (if (empty? extras)
+                                              extra
+                                              (conj extra [k extras]))})
+                                         (try
+                                           (if (func found)
+                                             ret
+                                             {:invalid (conj invalid [k found]) :extra extra})
+                                           (catch #?(:clj Exception
+                                                     :cljs :default)
+                                               _ (conj ret [k found]))))))
+                                   {:invalid [] :extra []} pack)
+          root-extra              (vec (remove (fn [[k v]] (get pack k)) v))]
+      {:invalid invalid :extra (if (empty? extra) root-extra (conj root-extra extra))})
     {:invalid (mapv #(do [% nil]) (keys pack)) :extra []}))
 
 (defn explained-as-pack?
