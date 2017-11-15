@@ -99,7 +99,7 @@
                                              {:invalid (conj invalid [k found]) :extra extra})
                                            (catch #?(:clj Exception
                                                      :cljs :default)
-                                               _ (conj ret [k found]))))))
+                                               _ {:invalid (conj invalid [k found]) :extra extra})))))
                                    {:invalid [] :extra []} pack)
           root-extra              (vec (remove (fn [[k v]] (get pack k)) v))]
       {:invalid invalid :extra (if (empty? extra) root-extra (into root-extra extra))})

@@ -132,7 +132,17 @@
     (is (= pack1-as2 (as-pack pack1 pack1-as2)))
     (is (thrown? AssertionError (as-pack pack1 {})))
     (is (thrown? AssertionError (as-pack pack1 nil)))
-    (is (thrown? AssertionError (as-pack pack1 99))))
+    (is (thrown? AssertionError (as-pack pack1 99)))
+    (is (= {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+            :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :b :b}}
+           (as-pack toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :b :b}})))
+    (is (= {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+            :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}
+           (as-pack toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}})))
+    (is (thrown? AssertionError (as-pack toys {:toy1 {:minimum-age 5 :name "andrew" :size :foo :color :red :foo :bar}
+                                               :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "is-pack"
     (is (is-pack pack1 pack1-is1))
     (is (= pack1-is1 (is-pack pack1 pack1-is1)))
@@ -142,7 +152,13 @@
     (is (thrown? AssertionError (is-pack pack1 {})))
     (is (thrown? AssertionError (is-pack pack1 nil)))
     (is (thrown? AssertionError (is-pack pack1 99)))
-    (is (not= 5 (clojure.walk/macroexpand-all '(is-pack pack1 5)))))
+    (is (not= 5 (clojure.walk/macroexpand-all '(is-pack pack1 5))))
+    (is (thrown? AssertionError (is-pack toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
+                                               :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}})))
+    (is (= {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+            :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}
+           (is-pack toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red}
+                          :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue}}))))
   (testing "defpack"
     (is (map? toy))
     (is (fn? as-toy?))
