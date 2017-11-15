@@ -7,8 +7,14 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns assistant.asserts
-  (:require [clojure.core]))
+(ns assistant.asserts)
+
+;; The simple tools provided here are all affected by the value of *assert*, which can be used in Clojure and ClojureScript.
+
+;; When *assert* is off, except for the predicate (asserts?), all forms and their args compile away with no runtime overhead.
+
+;; The tools are:
+;; (asserts?) (when-asserts ...) (log a b c) (logx a b c) (as ...)
 
 ;; This macro allows ClojureScript code to access the compile-time value of *assert*
 (defmacro asserts? [] *assert*)
