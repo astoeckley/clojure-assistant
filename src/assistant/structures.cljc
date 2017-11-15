@@ -52,8 +52,8 @@
 
 (defn as-pack?
   "Accepts a pack map and any other value and returns true if the value meets the specifications of the provided pack. 
-   Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally require 
-   that *only* the pack's keys are included in the provided value."
+   Note that a map might have additional keys not specified in the pack, and they are ignored. Use is-pack? to additionally 
+   require that *only* the pack's keys are included in the provided value."
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
@@ -72,10 +72,11 @@
   (and (map? explanation) (vector? invalid) (vector? extra) (= 2 (count explanation))))
 
 (defn explain-pack
-  "This is used by as-pack and is-pack macros to provide helpful assertion errors. Probably does not need to be called directly, 
-   though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from the provided value 
-   that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, but never nil. :invalid means 
-   the values do not pass the pack's predicates. :extra shows the additional entries not covered by the pack."
+  "This is used by as-pack and is-pack macros to provide helpful assertion errors. Probably does not need to be called 
+   directly, though it could be. Returns a map of :invalid and :extra vectors, each which contains k/v vector pairs from 
+   the provided value that do not meet the specification of the pack map. The :invalid and :extra vectors might be empty, 
+   but never nil. :invalid means the values do not pass the pack's predicates. :extra shows the additional entries not 
+   covered by the pack."
   [pack v]
   {:pre  [(map? pack)]
    :post [(explanation? %)]}
@@ -121,9 +122,9 @@
 (defmacro assert-pack
   "Used by the as-pack and is-pack macros; should not be called directly.
    Similar to the two-arity version of assistant.asserts/as macro, but instead of a predicate function, a pack map is supplied, 
-   which is just an ordinary map (as describe at top). When *assert* is on, it will assert that the value passes as if by as-pack? 
-   or is-pack? depending on explain-fn, and then return it. If it does not pass, the assertion failure shows the offending paths to
-   keys and their values. If *assert* is off, as-pack does nothing and just passes through the value."
+   which is just an ordinary map (as describe at top). When *assert* is on, it will assert that the value passes as if by 
+   as-pack? or is-pack? depending on explain-fn, and then return it. If it does not pass, the assertion failure shows the 
+   offending paths to keys and their values. If *assert* is off, as-pack does nothing and just passes through the value."
   [pack v explain-fn]
   (if *assert*
     `(let [ret#       ~v
@@ -146,13 +147,13 @@
   `(assert-pack ~pack ~v explained-is-pack?))
 
 (defmacro defpack
-  "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code 
-   more clear to explicitly show that the map you are creating will be used as a pack. The map is always generated; the other functions
-   are only created if 'extras' is true.
+  "This is a convenience macro that generates 1 to 3 defs at once. Even if you don't need the defined functions, it can make 
+   code more clear to explicitly show that the map you are creating will be used as a pack. The map is always generated; the 
+   other functions are only created if 'extras' is true.
 
    For example:
 
-   (defpack toy {:minimum-age pos? :color keyword?})
+   (defpack toy {:minimum-age pos? :color keyword?} true)
 
    Will create the following:
 
@@ -160,7 +161,8 @@
    (defn as-toy? [v] (as-pack? toy v))
    (defn is-toy? [v] (is-pack? toy v))
 
-   It will not create new macros. Because macros which emit other defmacros are tasks reserved for others. (hint: ClojureScript files are supported; you should be able to write a defpack in cljs source.)"
+   It will not create new macros. Because macros which emit other defmacros are tasks reserved for others. 
+   (hint: ClojureScript files are supported; you can write a defpack in cljs source.)"
   [packname packmap & [extras]]
   {:pre [(symbol? packname) (or (= 'true extras) (= 'false extras) (= nil extras))]}
   (if extras
