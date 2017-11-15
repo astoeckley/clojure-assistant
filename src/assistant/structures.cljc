@@ -142,21 +142,6 @@
        ret#)
     v))
 
-(defmacro pack
-  "This macro is no longer necessary with the new work for using maps in place of predicates in a pack.
-
-   Returns a predicate function like is-pack? for the supplied pack map, while also validating the predicate's argument with 
-   is-pack for the benefit of good error messages when *assert* is true. Example:
-
-   (pack toy) => #(is-pack? toy (is-pack toy %))
-
-   This is primarily designed for easily writing nested packs, using (pack ...) as the predicate for a key in another pack.
-
-   Note: this is a macro, not a function, so its behavior can change dyamically if the value of *assert* changes at runtime. This
-   can be useful in Clojure, but generally not in ClojureScript where *assert* is set at compile-time only."
-  [pack-map]
-  `(fn [pack#] (is-pack? ~pack-map (is-pack ~pack-map pack#))))
-
 (defmacro defpack
   "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code 
    more clear to explicitly show that the map you are creating will be used as a pack.
