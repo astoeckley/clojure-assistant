@@ -38,7 +38,7 @@
 
 ;; This is not a predicate test, as-pack is an *assertion* that the map can be used as a cool-toy. If it passes, the map
 ;; simply flows through. If *assert* is false, this expression does nothing and just compiles to some-map. In ClojureScript,
-;; pass ":elide-asserts true" as a compiler flag to turn the off. The assertions will show detailed errors that reveal the
+;; pass ":elide-asserts true" as a compiler flag to turn asserts off. The assertions will show detailed errors that reveal the
 ;; full path to nested pack keys and their values that failed.
 
 ;; (is-pack cool-toy some-map)
