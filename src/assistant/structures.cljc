@@ -7,12 +7,11 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns assistant.structures
-  (:require [clojure.core]))
+(ns assistant.structures)
 
 ;; A 'pack' is a map of keys of any type to predicate functions or other packs.
 ;; A predicate accepts one argument and returns a truthy value. 
-;; The predicates specify the allowed data to be stored in the pack with each key.
+;; The predicates or packs specify the allowed data to be stored in the pack with each key.
 ;;
 ;; Example pack:
 ;; 
@@ -144,7 +143,8 @@
 
 (defmacro defpack
   "This is a convenience macro that generates three defs at once. Even if you don't need the defined functions, it can make code 
-   more clear to explicitly show that the map you are creating will be used as a pack.
+   more clear to explicitly show that the map you are creating will be used as a pack. The map is always generated; the other functions
+   are only created if 'extras' is true.
 
    For example:
 
@@ -157,19 +157,21 @@
    (defn is-toy? [v] (is-pack? toy v))
 
    It will not create new macros. Because macros which emit other defmacros are tasks reserved for others. (hint: ClojureScript files are supported; you should be able to write a defpack in cljs source.)"
-  [packname packmap]
-  {:pre [symbol? packname]}
-  (let [as-name?  (symbol (str "as-" packname "?"))
-        is-name?  (symbol (str "is-" packname "?"))
-        as-name   (symbol (str "as-" packname))
-        is-name   (symbol (str "is-" packname))
-        args-name (gensym "args")]
+  [packname packmap & [extras]]
+  {:pre [(symbol? packname) (or (= 'true extras) (= 'false extras) (= nil extras))]}
+  (if extras
+    (let [as-name?  (symbol (str "as-" packname "?"))
+          is-name?  (symbol (str "is-" packname "?"))
+          args-name (gensym "args")]
+      `(let [pack# ~packmap]
+         (assert (map? pack#) (str "defpack did not receive a map for " '~packname ". Instead: " (if (nil? pack#) "nil" pack#)))
+         (def ~packname pack#)
+         (defn ~as-name?
+           [~args-name]
+           (as-pack? ~packname ~args-name))
+         (defn ~is-name?
+           [~args-name]
+           (is-pack? ~packname ~args-name))))
     `(let [pack# ~packmap]
        (assert (map? pack#) (str "defpack did not receive a map for " '~packname ". Instead: " (if (nil? pack#) "nil" pack#)))
-       (def ~packname pack#)
-       (defn ~as-name?
-         [~args-name]
-         (as-pack? ~packname ~args-name))
-       (defn ~is-name?
-         [~args-name]
-         (is-pack? ~packname ~args-name)))))
+       (def ~packname pack#))))

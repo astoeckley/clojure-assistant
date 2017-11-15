@@ -30,9 +30,11 @@
 
 (defpack toy {:minimum-age pos? :color keyword?
               :size        #(and (<= % 10) (>= % 5))
-              :name        string?})
+              :name        string?}
+  true)
 
-(defpack toys {:toy1 toy :toy2 toy})
+(defpack toys {:toy1 toy :toy2 toy}
+  true)
 
 (deftest asserts-on
   (testing "as-pack?"
