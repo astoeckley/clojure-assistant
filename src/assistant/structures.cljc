@@ -102,7 +102,7 @@
                                                _ (conj ret [k found]))))))
                                    {:invalid [] :extra []} pack)
           root-extra              (vec (remove (fn [[k v]] (get pack k)) v))]
-      {:invalid invalid :extra (if (empty? extra) root-extra (conj root-extra extra))})
+      {:invalid invalid :extra (if (empty? extra) root-extra (into root-extra extra))})
     {:invalid (mapv #(do [% nil]) (keys pack)) :extra []}))
 
 (defn explained-as-pack?
