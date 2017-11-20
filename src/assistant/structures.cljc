@@ -75,7 +75,8 @@
      (every? (fn [[k func]]
                (if (map? func)
                  (pack? func (get v k) compare-keys)
-                 (func (get v k)))) pack)
+                 (func (get v k))))
+             pack)
      (catch #?(:clj Exception
                :cljs :default)
          _ false))))
