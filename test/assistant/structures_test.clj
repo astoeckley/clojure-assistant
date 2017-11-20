@@ -179,6 +179,98 @@
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
     (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
 
+(defpack address {:street string? :city string? :state (every-pred string? #(= 2 (count %)))
+                  :zip    (every-pred string? #(= 5 (count %)))}
+  true)
+(def person {:address address
+             :name    string?
+             :age     (every-pred pos? integer?)
+             :height  (every-pred pos? number?)})
+(defpack two-people {:one person :two person})
+
+(deftest asserts-on-nested
+  (testing "nested people"
+    (is (is-address? {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}))
+    (is (is-pack? address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}))
+    (is (false? (is-address? {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"})))
+    (is (false? (is-pack? address {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"})))
+    (is (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}
+                          :name    "Andrew"
+                          :age     1
+                          :height  1}))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  0})))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  1})))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "MEi" :zip "12345"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  1})))
+    (is (= {:invalid [[:address [[:street 5]]]] :extra [[:address [[:extra 99]]]]}
+           (explain-pack person {:address {:street 5 :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                 :name    "hi" :age 1 :height 1000000000000})))
+    (is (thrown? AssertionError (is-pack address {:street 5 :city "hi" :state "hi" :zip "abcde" :extra 99})))
+    (is (thrown? AssertionError (is-pack person {:address {:street "Foo St." :city "Foo City" :state "MEi" :zip "12345"}
+                                                 :name    "Andrew"
+                                                 :age     1
+                                                 :height  1})))
+    (is (= {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+            :name    "hi" :age 1 :height 1000000000000}
+           (as-pack person {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                            :name    "hi" :age 1 :height 1000000000000})))
+    (is (thrown? AssertionError (is-pack person {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                                 :name    "hi" :age 1 :height 1000000000000})))
+    (is (true? (as-pack? two-people {:one {:name    "" :age 1 :height 1
+                                           :address {:a      1  :b     1    :c   :hi
+                                                     :city   "lllll1123235"
+                                                     :street "" :state "aa" :zip "12345"}}
+                                     :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                           :name    "hi" :age 1 :height 1000000000000}})))
+    (is (false? (is-pack? two-people {:one {:name    "" :age 1 :height 1
+                                            :address {:a      1  :b     1    :c   :hi
+                                                      :city   "lllll1123235"
+                                                      :street "" :state "aa" :zip "12345"}}
+                                      :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                            :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 1
+                  :address {:a      1  :b     1    :c   :hi
+                            :city   "lllll1123235"
+                            :street "" :state "aa" :zip "12345"}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (as-pack two-people {:one {:name    "" :age 1 :height 1
+                                      :address {:a      1  :b     1    :c   :hi
+                                                :city   "lllll1123235"
+                                                :street "" :state "aa" :zip "12345"}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                      :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 1
+                  :address {:city   "lllll1123235"
+                            :street "" :state "aa" :zip "12345"}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (is-pack two-people {:one {:name    "" :age 1 :height 1
+                                      :address {:city   "lllll1123235"
+                                                :street "" :state "aa" :zip "12345"}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                                      :name    "hi" :age 1 :height 1000000000000}})))
+    (is (thrown? AssertionError (is-pack two-people {:one {:name    "" :age 1 :height 0
+                                                           :address {:a      1  :b     1    :c   :hi
+                                                                     :city   "lllll1123235"
+                                                                     :street "" :state "aa" :zip "12345"}}
+                                                     :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                                           :name    "hi" :age 1 :height 1000000000000}})))
+    (is (thrown? AssertionError (as-pack two-people {:one {:name    "" :age 1 :height 1
+                                                           :address {:a      1  :b     1    :c   :hi
+                                                                     :city   "lllll1123235"
+                                                                     :street "" :state "aa" :zip 9}}
+                                                     :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                                                           :name    "hi" :age 1 :height 1000000000000}})))))
+
 (set! *assert* false)
 
 (deftest asserts-off
@@ -295,5 +387,107 @@
     (is (true? (as-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
     (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
+
+(deftest asserts-off-nested
+  (testing "nested people"
+    (is (is-address? {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}))
+    (is (is-pack? address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}))
+    (is (false? (is-address? {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"})))
+    (is (false? (is-pack? address {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"})))
+    (is (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}
+                          :name    "Andrew"
+                          :age     1
+                          :height  1}))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "12345"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  0})))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "ME" :zip "123456"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  1})))
+    (is (false? (is-pack? person {:address {:street "Foo St." :city "Foo City" :state "MEi" :zip "12345"}
+                                  :name    "Andrew"
+                                  :age     1
+                                  :height  1})))
+    (is (= {:invalid [[:address [[:street 5]]]] :extra [[:address [[:extra 99]]]]}
+           (explain-pack person {:address {:street 5 :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                 :name    "hi" :age 1 :height 1000000000000})))
+    (is (= {:street 5 :city "hi" :state "hi" :zip "abcde" :extra 99}
+           (is-pack address {:street 5 :city "hi" :state "hi" :zip "abcde" :extra 99})))
+    (is (= {:address {:street "Foo St." :city "Foo City" :state "MEi" :zip "12345"}
+            :name    "Andrew"
+            :age     1
+            :height  1}
+           (is-pack person {:address {:street "Foo St." :city "Foo City" :state "MEi" :zip "12345"}
+                            :name    "Andrew"
+                            :age     1
+                            :height  1})))
+    (is (= {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+            :name    "hi" :age 1 :height 1000000000000}
+           (as-pack person {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                            :name    "hi" :age 1 :height 1000000000000})))
+    (is (= {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+            :name    "hi" :age 1 :height 1000000000000}
+           (is-pack person {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                            :name    "hi" :age 1 :height 1000000000000})))
+    (is (true? (as-pack? two-people {:one {:name    "" :age 1 :height 1
+                                           :address {:a      1  :b     1    :c   :hi
+                                                     :city   "lllll1123235"
+                                                     :street "" :state "aa" :zip "12345"}}
+                                     :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                           :name    "hi" :age 1 :height 1000000000000}})))
+    (is (false? (is-pack? two-people {:one {:name    "" :age 1 :height 1
+                                            :address {:a      1  :b     1    :c   :hi
+                                                      :city   "lllll1123235"
+                                                      :street "" :state "aa" :zip "12345"}}
+                                      :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                            :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 1
+                  :address {:a      1  :b     1    :c   :hi
+                            :city   "lllll1123235"
+                            :street "" :state "aa" :zip "12345"}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (as-pack two-people {:one {:name    "" :age 1 :height 1
+                                      :address {:a      1  :b     1    :c   :hi
+                                                :city   "lllll1123235"
+                                                :street "" :state "aa" :zip "12345"}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                      :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 1
+                  :address {:city   "lllll1123235"
+                            :street "" :state "aa" :zip "12345"}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (is-pack two-people {:one {:name    "" :age 1 :height 1
+                                      :address {:city   "lllll1123235"
+                                                :street "" :state "aa" :zip "12345"}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                                      :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 0
+                  :address {:a      1  :b     1    :c   :hi
+                            :city   "lllll1123235"
+                            :street "" :state "aa" :zip "12345"}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (is-pack two-people {:one {:name    "" :age 1 :height 0
+                                      :address {:a      1  :b     1    :c   :hi
+                                                :city   "lllll1123235"
+                                                :street "" :state "aa" :zip "12345"}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde" :extra 99}
+                                      :name    "hi" :age 1 :height 1000000000000}})))
+    (is (= {:one {:name    "" :age 1 :height 1
+                  :address {:a      1  :b     1    :c   :hi
+                            :city   "lllll1123235"
+                            :street "" :state "aa" :zip 9}}
+            :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                  :name    "hi" :age 1 :height 1000000000000}}
+           (as-pack two-people {:one {:name    "" :age 1 :height 1
+                                      :address {:a      1  :b     1    :c   :hi
+                                                :city   "lllll1123235"
+                                                :street "" :state "aa" :zip 9}}
+                                :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
+                                      :name    "hi" :age 1 :height 1000000000000}})))))
 
 (set! *assert* true)
