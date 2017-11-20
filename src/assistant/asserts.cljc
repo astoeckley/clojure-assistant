@@ -11,10 +11,12 @@
 
 ;; The simple tools provided here are all affected by the value of *assert*, which can be used in Clojure and ClojureScript.
 
-;; When *assert* is off, except for the predicate (asserts?), all forms and their args compile away with no runtime overhead.
-
 ;; The tools are:
 ;; (asserts?) (when-asserts ...) (log a b c) (logx a b c) (as ...)
+
+;; When *assert* is off:
+;;    For when-asserts, log, logx, all forms and their args compile away with no runtime overhead.
+;;    For 'as', see additional information in its doc string.
 
 ;; This macro allows ClojureScript code to access the compile-time value of *assert*
 (defmacro asserts? [] *assert*)
