@@ -92,12 +92,12 @@
         `(let [ret#   ~b
                valid# (~a ret#)]
            (assert valid# (str "Expression " '~b
-                               " evals to " (if (nil? ret#) "nil" ret#)
+                               " evals to " (if (nil? ret#) "nil" (pr-str ret#))
                                " which fails " '~a))
            ret#)
         `(let [ret# ~a]
            (assert ret# (str "Expression " '~a
-                             " is " (if (nil? ret#) "nil" ret#)))
+                             " is " (if (nil? ret#) "nil" (pr-str ret#))))
            ret#))
       (if (= 1 num-b) b a))))
 
