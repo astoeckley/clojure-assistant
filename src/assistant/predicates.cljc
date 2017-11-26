@@ -11,7 +11,8 @@
 (defn count?
   "Determines if sequence has expected size"
   [size target]
-  {:pre  [(#?(:clj integer? :cljs int?) size)]
+  {:pre  [(#?(:clj integer? :cljs int?) size)
+          (pos? size)]
    :post [(bool? %)]}
   (try
     (= size (count target))
@@ -22,7 +23,8 @@
 (defn all?
   "Determines if a sequence is of expected size and all entries pass the same predicate"
   [size pred target]
-  {:pre  [(#?(:clj integer? :cljs int?) size)]
+  {:pre  [(#?(:clj integer? :cljs int?) size)
+          (pos? size)]
    :post [(bool? %)]}
   (try
     (and (every? pred target) (= size (count target)))

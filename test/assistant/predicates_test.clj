@@ -1,0 +1,37 @@
+(ns assistant.predicates-test
+  (:require [clojure.test :refer :all]
+            [assistant.predicates :refer :all]))
+
+(deftest predicates
+  (testing "bool?"
+    (is (bool? true))
+    (is (bool? false))
+    (is (true? (bool? true)))
+    (is (true? (bool? false)))
+    (is (false? (bool? 4)))
+    (is (false? (bool? nil)))
+    (is (false? (bool? #())))
+    (is (false? (bool? bool?))))
+  (testing "count?"
+    (is (true? (count? 0 [])))
+    (is (true? (count? 1 [nil])))
+    (is (true? (count? 1 [1])))
+    (is (true? (count? 1 [""])))
+    (is (true? (count? 0 "")))
+    (is (true? (count? 1 "a")))
+    (is (true? (count? 2 ":a")))
+    (is (true? (count? 1 [[]])))
+    (is (true? (count? 2 [[] []])))
+    (is (true? (count? 2 [[] [:a]])))
+    (is (true? (count? 2 [[] (range 1000)])))
+    (is (true? (count? 2 [(range 1000) (range 1000)])))
+    (is (true? (count? 1 (range 1))))
+    (is (true? (count? 1000000 (range 1000000))))
+    (is (true? (count? (- 3 2) ["hello there"])))
+    (is (true? (count? 0 nil)))
+    (is (false? (count? 0 [nil])))
+    (is (false? (count? 0 :a)))
+    (is (false? (count? 0 identity)))
+    (is (false? (count? 3 (range 4))))
+    (is (false? (count? -1 (range 1))))
+    (is (false? (count? 2 "foo")))))
