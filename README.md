@@ -16,7 +16,7 @@ Clojure Assistant is just normal maps and functions for the most part.
 
 Clojars:  
 
-```[nl.balconystudio/clojure-assistant "0.1.2"]```
+```[nl.balconystudio/clojure-assistant "0.1.3"]```
 
 Require in CLJ: 
 
@@ -24,11 +24,13 @@ Require in CLJ:
 
 ```[assistant.asserts ...]```
 
-Require in CLJS:
+```[assistant.predicates ...]```
+
+
+Require macros in CLJS:
 
 ```[assistant.structures :as ass :include-macros true ..(etc)..]```
 
-```[assistant.asserts ...]```
 
 ### PRs, Issues
 
