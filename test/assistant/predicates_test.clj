@@ -4,8 +4,6 @@
 
 (deftest predicates
   (testing "bool?"
-    (is (bool? true))
-    (is (bool? false))
     (is (true? (bool? true)))
     (is (true? (bool? false)))
     (is (false? (bool? 4)))
@@ -34,4 +32,31 @@
     (is (false? (count? 0 identity)))
     (is (false? (count? 3 (range 4))))
     (is (false? (count? -1 (range 1))))
-    (is (false? (count? 2 "foo")))))
+    (is (false? (count? 2 "foo"))))
+  (testing "all?"
+    (is (true? (all? 0 bool? [])))
+    (is (true? (all? 0 bool? nil)))
+    (is (true? (all? 0 string? [])))
+    (is (true? (all? 0 string? nil)))
+    (is (true? (all? 1 bool? [false])))
+    (is (true? (all? 1 bool? [true])))
+    (is (true? (all? 1 string? ["hi"])))
+    (is (true? (all? 2 string? ["hi" "there"])))
+    (is (true? (all? 1000 number? (range 1000))))
+    (is (true? (all? 3 keyword? [:a :b :keyword])))
+    (is (true? (all? 3 vector? (seq [[] [:a] [[[:b]]]]))))
+    (is (true? (all? 2 #(all? 2 string? %) [["hi" "there"]
+                                            ["foo" "bar"]])))
+    (is (false? (all? 2 #(all? 2 string? %) [["hi" "there"]
+                                            ["foo" "bar" "baz"]])))
+    (is (false? (all? -1 string? [:hi])))
+    (is (false? (all? 0 bool? [ true])))
+    (is (false? (all? 0 bool? true)))
+    (is (false? (all? 0 string? ["hi"])))
+    (is (false? (all? 0 string? "hi")))
+    (is (false? (all? 1 bool? [:a])))
+    (is (false? (all? 1 bool? ["hi"])))
+    (is (false? (all? 1 string? [1])))
+    (is (false? (all? 2 string? ["hi" :hi])))
+    (is (false? (all? 1000 number? (range 1001))))
+    (is (false? (all? 3 keyword? [:a :b :keyword :c])))))
