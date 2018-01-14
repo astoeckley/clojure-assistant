@@ -6,6 +6,7 @@
 (defn bool?
   "Is x true or false"
   [x]
+  {:post [(or (= true %) (= false %))]}
   (or (= true x) (= false x)))
 
 (defn count?
