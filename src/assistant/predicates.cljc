@@ -35,8 +35,22 @@
 (defn same-size?
   "Are the provided collections the same count?"
   [& xs]
+  {:post [(bool? %)]}
   (try
     (apply = (map count xs))
+    (catch #?(:clj Exception
+              :cljs :default)
+        _ false)))
+
+(defn map-structure?
+  "Verifies that a map has all keys of the same type and values of a same type."
+  [keys-pred vals-pred target]
+  {:post [(bool? %)]}
+  (try
+    (and
+     (map? target)
+     (every? keys-pred (keys target))
+     (every? vals-pred (vals target)))
     (catch #?(:clj Exception
               :cljs :default)
         _ false)))
