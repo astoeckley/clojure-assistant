@@ -103,6 +103,9 @@
     (is (false? (same-size? {:a 1 :b 2 :c 3} (range 2) (range 2))))
     (is (false? (same-size? [1 2 3] '(4 5 6 7) (range 3)))))
   (testing "map-structure?"
+    (is (false? (map-structure? integer? keyword? nil)))
+    (is (false? (map-structure? integer? keyword? 5)))
+    (is (false? (map-structure? integer? keyword? :a)))
     (is (map-structure? integer? keyword? {1 :a 2 :b 3 :c 4 :d}))
     (is (false? (map-structure? integer? keyword? {1 :a 2 :b 3 :c 4 5})))
     (is (map-structure? integer? integer? (into {} (map vector (range 100000) (range 200000)))))
