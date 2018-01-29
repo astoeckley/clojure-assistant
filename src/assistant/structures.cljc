@@ -50,13 +50,15 @@
 ;; Used like this, the macro simply creates a map as if by def instead of defpack. If a last argument of true is passed,
 ;; it will generate additional convenience functions which wrap as-pack? and is-pack? See more explanation below.
 
-(defn keys-match?
-  "Questions if the pack and the value have the exact same keys, with no extra keys in one that are not in the other."
+(defn no-extra-keys?
+  "Returs false if value v has keys that the pack does not"
   [pack v]
   {:pre  [(map? pack)]
    :post [(or (false? %) (true? %))]}
   (try
-    (= (set (keys pack)) (set (keys v)))
+    (if (seq (clojure.set/difference (set (keys v)) (set (keys pack))))
+      false
+      true)
     (catch #?(:clj Exception
               :cljs :default)
         _ false)))
@@ -69,7 +71,7 @@
    :post [(or (false? %) (true? %))]}
   (and
    (if compare-keys
-     (keys-match? pack v)
+     (no-extra-keys? pack v)
      true)
    (try
      (every? (fn [[k func]]

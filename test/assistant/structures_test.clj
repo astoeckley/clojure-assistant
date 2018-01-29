@@ -95,6 +95,7 @@
                                :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
   (testing "testing size"
     (is (is-pack testing-size {:map {:a 1 :b 2 :c 3}}))
+    (is (as-pack testing-size {:map {:a 1 :b 2 :c 3}}))
     (is (false? (is-pack? testing-size {:map {:a 1 :b 2 :c 3 :d 4}}))))
   (testing "testing map structure inside a pack"
     (is (is-pack testing-map-structure {:map {1 :a 2 :b}}))
