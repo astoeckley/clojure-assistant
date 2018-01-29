@@ -16,7 +16,7 @@ Clojure Assistant is just normal maps and functions for the most part.
 
 Clojars:  
 
-```[nl.balconystudio/clojure-assistant "0.1.6"]```
+```[nl.balconystudio/clojure-assistant "0.1.61"]```
 
 Require in CLJ: 
 

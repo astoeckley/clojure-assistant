@@ -7,7 +7,8 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns assistant.structures)
+(ns assistant.structures
+  (:require [clojure.set]))
 
 ;; A 'pack' is a map of keys of any type to predicate functions or other packs.
 ;; A predicate accepts one argument and returns a truthy value. 
