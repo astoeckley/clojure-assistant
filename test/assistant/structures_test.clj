@@ -37,6 +37,14 @@
 (defpack toys {:toy1 toy :toy2 toy}
   true)
 
+(defn map-size-3?
+  "Is true if the value is a map with three elements"
+  [m]
+  (and (map? m)
+       (= 3 (count m))))
+
+(defpack testing-size {:map map-size-3?})
+
 (deftest asserts-on
   (testing "as-pack?"
     (is (as-pack? {#{1 2} #{:a :b}} {#{2 1} :b :c 99}))
@@ -74,6 +82,9 @@
                                 :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
     (is (true? (as-pack? toys {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
                                :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
+  (testing "testing size"
+    (is (is-pack testing-size {:map {:a 1 :b 2 :c 3}}))
+    (is (false? (is-pack? testing-size {:map {:a 1 :b 2 :c 3 :d 4}}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
