@@ -1,6 +1,7 @@
 (ns assistant.structures-test
   (:require [clojure.test :refer :all]
-            [assistant.structures :refer :all]))
+            [assistant.structures :refer :all]
+            [assistant.predicates :refer [map-structure?]]))
 
 ;;; ------------------------------------------------------
 ;;; Various maps used in testing
@@ -47,6 +48,7 @@
 
 (defpack testing-size {:map map-size-3?})
 
+(defpack testing-map-structure {:map #(map-structure? integer? keyword? %)})
 
 ;;; ------------------------------------------------------
 ;;; Testing the features when *asserts* is on, which triggers these validations
@@ -94,6 +96,10 @@
   (testing "testing size"
     (is (is-pack testing-size {:map {:a 1 :b 2 :c 3}}))
     (is (false? (is-pack? testing-size {:map {:a 1 :b 2 :c 3 :d 4}}))))
+  (testing "testing map structure inside a pack"
+    (is (is-pack testing-map-structure {:map {1 :a 2 :b}}))
+    (is (is-pack testing-map-structure {:map {}}))
+    (is (false? (is-pack? testing-map-structure {:map {:a 1}}))))
   (testing "keys-match?"
     (is (keys-match? pack1 pack1-is1))
     (is (keys-match? pack1 pack1))
