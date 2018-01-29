@@ -2,8 +2,6 @@
   (:require [clojure.test :refer :all]
             [assistant.structures :refer :all]))
 
-(set! *assert* true)
-
 (def pack1 {:a number?
             :b float?
             :c string?
@@ -44,6 +42,8 @@
        (= 3 (count m))))
 
 (defpack testing-size {:map map-size-3?})
+
+(set! *assert* true)
 
 (deftest asserts-on
   (testing "as-pack?"
