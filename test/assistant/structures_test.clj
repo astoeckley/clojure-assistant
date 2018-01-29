@@ -2,6 +2,10 @@
   (:require [clojure.test :refer :all]
             [assistant.structures :refer :all]))
 
+;;; ------------------------------------------------------
+;;; Various maps used in testing
+;;; ------------------------------------------------------
+
 (def pack1 {:a number?
             :b float?
             :c string?
@@ -42,6 +46,11 @@
        (= 3 (count m))))
 
 (defpack testing-size {:map map-size-3?})
+
+
+;;; ------------------------------------------------------
+;;; Testing the features when *asserts* is on, which triggers these validations
+;;; ------------------------------------------------------
 
 (set! *assert* true)
 
@@ -282,6 +291,11 @@
                                                      :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
                                                            :name    "hi" :age 1 :height 1000000000000}})))))
 
+
+;;; ------------------------------------------------------
+;;; Testing that features do nothing when *asserts* is off
+;;; ------------------------------------------------------
+
 (set! *assert* false)
 
 (deftest asserts-off
@@ -500,5 +514,8 @@
                                                 :street "" :state "aa" :zip 9}}
                                 :two {:address {:street "5" :city "hi" :state "hi" :zip "abcde"}
                                       :name    "hi" :age 1 :height 1000000000000}})))))
+
+
+;; Turn asserts back on ------------------------------------------------------------------ 
 
 (set! *assert* true)
