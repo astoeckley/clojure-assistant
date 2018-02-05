@@ -66,7 +66,7 @@
 
 (defn pack?
   "Primarily used by as-pack? and is-pack?, this accepts a pack, a value to test, and a boolean compare-keys.
-   If compare-keys is true, the test will also use keys-match?"
+   If compare-keys is true, the test will also use no-extra-keys?"
   [pack v compare-keys]
   {:pre  [(map? pack) (or (false? compare-keys) (true? compare-keys))]
    :post [(or (false? %) (true? %))]}
