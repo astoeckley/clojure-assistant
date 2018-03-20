@@ -1,4 +1,4 @@
-(defproject nl.balconystudio/clojure-assistant "0.1.61"
+(defproject nl.balconystudio/clojure-assistant "0.1.62"
   :description "Simple tools for structural validation of data shapes and debug mode assertions."
   :url "http://github.com/astoeckley/clojure-assistant"
   :license {:name "Eclipse Public License"
