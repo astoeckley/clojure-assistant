@@ -31,7 +31,7 @@
   "Cross-environment logging. JS requires console.log, not prn and friends, for Chrome Dev Tools assistance."
   [& logs]
   (apply
-   #?@(:clj (prn)
+   #?@(:clj (println)
        :cljs (js/console.log))
    logs))
 
