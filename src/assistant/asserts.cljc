@@ -28,12 +28,12 @@
   (when *assert* `(do ~@forms nil)))
 
 (defn log*
-  "Cross-environment logging. JS requires console.log, not prn and friends, for Chrome Dev Tools assistance."
+  "Cross-environment logging. JS requires console.log for Chrome Dev Tools assistance. On the Clojure side, see this tip for better printing in multithreaded scenarios:
+
+http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html"
   [& logs]
-  (apply
-   #?@(:clj (println)
-       :cljs (js/console.log))
-   logs))
+  #?(:clj (print (str (apply str logs) "\n"))
+     :cljs (apply js/console.log logs)))
 
 (defmacro log
   "Logs only when *assert* is true. In CLJS, uses JS console for Dev Tools support."
