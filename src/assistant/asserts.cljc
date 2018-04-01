@@ -32,7 +32,7 @@
 
 http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html"
   [& logs]
-  #?(:clj (print (str (apply str logs) "\n"))
+  #?(:clj (print (str (apply str (interpose " " logs)) "\n"))
      :cljs (apply js/console.log logs)))
 
 (defmacro log
