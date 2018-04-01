@@ -30,9 +30,11 @@
 (defn log*
   "Cross-environment logging. JS requires console.log for Chrome Dev Tools assistance. On the Clojure side, see this tip for better printing in multithreaded scenarios:
 
-http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html"
+http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html
+
+Explicitly joined newline character ensures printing from different threads doesn't upset the newlines. Calling flush explicitly assures a flush, while a newline character alone does not."
   [& logs]
-  #?(:clj (print (str (apply str (interpose " " logs)) "\n"))
+  #?(:clj (do (print (str (apply str (interpose " " logs)) "\n")) (flush))
      :cljs (apply js/console.log logs)))
 
 (defmacro log
