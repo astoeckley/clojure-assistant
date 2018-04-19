@@ -1,7 +1,9 @@
 (ns assistant.predicates)
 
-;; Simple predicates to aid in creating elegant assertions. Returns false if targets are not eligible for
-;; these inspections (instead of throwing an exception).
+;; Simple predicates to aid in creating elegant assertions and validations.
+;; Returns false if targets are not eligible for these inspections (instead of throwing an exception).
+
+;; The target value being tested is always the last argument
 
 (defn bool?
   "Is x true or false"
@@ -55,3 +57,23 @@
     (catch #?(:clj Exception
               :cljs :default)
         _ false)))
+
+
+;; --------- Nilable data --------- 
+
+(defn nil-or?
+  "Returns true if target is nil or passes predicate."
+  [pred target]
+  {:pre [pred]}
+  (try
+    (or (nil? target) (pred target))
+    (catch #?(:clj Exception
+              :cljs :default)
+        _ false)))
+
+(defn nilable
+  "Wraps a predicate in a function that allows either the predicate to pass, or nil be allowed."
+  [pred]
+  {:pre [pred]}
+  #(nil-or? pred %))
+

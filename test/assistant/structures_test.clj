@@ -523,6 +523,6 @@
                                       :name    "hi" :age 1 :height 1000000000000}})))))
 
 
-;; Turn asserts back on ------------------------------------------------------------------ 
+;; Turn asserts back on 
 
 (set! *assert* true)
