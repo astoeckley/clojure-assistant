@@ -16,39 +16,39 @@
 
 (defpack pack3 {:pack2 pack2 :pack1 pack1})
 
-(def no-explain {:invalid [] :extra []})
 (def pack1-is1 {:a 1 :b 1.0 :d 1 :c "hello"})
 (def pack1-is2 {:d 9.9 :b -0.001 :a 1000.1 :c ""})
 (def pack1-as1 {:a 1 :b 1.0 :d 1 :c "hello" :e :whoa})
-(def explain-pack1-as1 {:invalid [] :extra [[:e :whoa]]})
 (def pack1-as2 {:d 9.9 :b -0.001 :a 1000.1 :c "" :f ""})
-(def explain-pack1-as2 {:invalid [] :extra [[:f ""]]})
 (def pack1-not1 {:a 1 :b 1 :d 0 :c ""})
 (def pack1-not2 {})
 (def pack1-not3 {:a 1 :b 1 :d 1 :c ""})
-(def explain-pack1-is1 {:invalid [[:b 1]] :extra []})
 (def pack2-not {:pack pack1-not3})
-(def explain-pack1-is2 {:invalid [[:pack [[:b 1]]]] :extra []})
 (def pack2-not2 {:pack (assoc pack1-not3 :foo :bar)})
+
+(def no-explain {:invalid [] :extra []})
+(def explain-pack1-is1 {:invalid [[:b 1]] :extra []})
+(def explain-pack1-is2 {:invalid [[:pack [[:b 1]]]] :extra []})
+(def explain-pack1-as1 {:invalid [] :extra [[:e :whoa]]})
+(def explain-pack1-as2 {:invalid [] :extra [[:f ""]]})
 (def explain-pack1-is3 {:invalid [[:pack [[:b 1]]]] :extra [[:pack [[:foo :bar]]]]})
 
 (defpack toy {:minimum-age pos? :color keyword?
               :size        #(and (<= % 10) (>= % 5))
-              :name        string?}
-  true)
+              :name        string?} true)
 
-(defpack toys {:toy1 toy :toy2 toy}
-  true)
+(defpack toys {:toy1 toy :toy2 toy} true)
 
 (defn map-size-3?
   "Is true if the value is a map with three elements"
   [m]
-  (and (map? m)
-       (= 3 (count m))))
+  (and (map? m) (= 3 (count m))))
 
 (defpack testing-size {:map map-size-3?})
 
 (defpack testing-map-structure {:map #(map-structure? integer? keyword? %)})
+
+(defpacked valid-packed {:a [int? 55] #{1 2 3} [#{:a :b} :a]})
 
 ;;; ------------------------------------------------------
 ;;; Testing the features when *asserts* is on, which triggers these validations
@@ -101,19 +101,19 @@
     (is (is-pack testing-map-structure {:map {1 :a 2 :b}}))
     (is (is-pack testing-map-structure {:map {}}))
     (is (false? (is-pack? testing-map-structure {:map {:a 1}}))))
-  (testing "keys-match?"
-    (is (keys-match? pack1 pack1-is1))
-    (is (keys-match? pack1 pack1))
-    (is (keys-match? pack1 pack1-is2))
-    (is (false? (keys-match? pack1 pack1-as1)))
-    (is (false? (keys-match? pack1 pack1-as2)))
-    (is (thrown? AssertionError (keys-match? [] pack1)))
-    (is (thrown? AssertionError (keys-match? nil nil)))
-    (is (thrown? AssertionError (keys-match? nil pack1)))
-    (is (false? (keys-match? pack1 nil)))
-    (is (false? (keys-match? pack1 9)))
-    (is (keys-match? pack1 pack1-not1))
-    (is (false? (keys-match? pack1 pack1-not2))))
+  (testing "no-extra-keys?"
+    (is (no-extra-keys? pack1 pack1-is1))
+    (is (no-extra-keys? pack1 pack1))
+    (is (no-extra-keys? pack1 pack1-is2))
+    (is (false? (no-extra-keys? pack1 pack1-as1)))
+    (is (false? (no-extra-keys? pack1 pack1-as2)))
+    (is (thrown? AssertionError (no-extra-keys? [] pack1)))
+    (is (thrown? AssertionError (no-extra-keys? nil nil)))
+    (is (thrown? AssertionError (no-extra-keys? nil pack1)))
+    (is (true? (no-extra-keys? pack1 nil)))
+    (is (false? (no-extra-keys? pack1 9)))
+    (is (no-extra-keys? pack1 pack1-not1))
+    (is (true? (no-extra-keys? pack1 pack1-not2))))
   (testing "is-pack?"
     (is (is-pack? {#{1 2} #{:a :b}} {#{2 1} :b}))
     (is (is-pack? pack1 pack1-is1))
@@ -204,15 +204,26 @@
     (is (false? (as-toy? {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar})))
     (is (true? (as-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
+    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}))))
+  (testing "defpacked"
+    (is (thrown? AssertionError (defpacked will-throw-bad-format {:a [int? 0] :b string?})))
+    (is (thrown? AssertionError (defpacked will-throw-bad-defaults {:a [int? "hi"] :b [string? "hi"]})))
+    (is (is-valid-packed? {:a 44 #{2 3 1} :b}))
+    (is (as-valid-packed? {:a 44 #{2 3 1} :b :c :c}))
+    (is (false? (as-valid-packed? {:a 11.1 #{2 3 1} :b :c :c})))
+    (is (false? (is-valid-packed? {:a 44 #{2 3 1} :d})))
+    (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
+    (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
+    (is (as-valid-packed? (assoc valid-packed-defaults :e 44)))))
 
 (defpack address {:street string? :city string? :state (every-pred string? #(= 2 (count %)))
-                  :zip    (every-pred string? #(= 5 (count %)))}
-  true)
+                  :zip    (every-pred string? #(= 5 (count %)))} true)
+
 (def person {:address address
              :name    string?
              :age     (every-pred pos? integer?)
              :height  (every-pred pos? number?)})
+
 (defpack two-people {:one person :two person})
 
 (deftest asserts-on-nested
@@ -336,16 +347,16 @@
                            :toy2 {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar}})))
     (is (true? (as-toys? {:toy1 {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}
                           :toy2 {:minimum-age 5 :name "bobby" :size 9 :color :blue :foo :bar}}))))
-  (testing "keys-match?"
-    (is (keys-match? pack1 pack1-is1))
-    (is (keys-match? pack1 pack1))
-    (is (keys-match? pack1 pack1-is2))
-    (is (false? (keys-match? pack1 pack1-as1)))
-    (is (false? (keys-match? pack1 pack1-as2)))
-    (is (false? (keys-match? pack1 nil)))
-    (is (false? (keys-match? pack1 9)))
-    (is (keys-match? pack1 pack1-not1))
-    (is (false? (keys-match? pack1 pack1-not2))))
+  (testing "no-extra-keys?"
+    (is (no-extra-keys? pack1 pack1-is1))
+    (is (no-extra-keys? pack1 pack1))
+    (is (no-extra-keys? pack1 pack1-is2))
+    (is (false? (no-extra-keys? pack1 pack1-as1)))
+    (is (false? (no-extra-keys? pack1 pack1-as2)))
+    (is (true? (no-extra-keys? pack1 nil)))
+    (is (false? (no-extra-keys? pack1 9)))
+    (is (no-extra-keys? pack1 pack1-not1))
+    (is (true? (no-extra-keys? pack1 pack1-not2))))
   (testing "is-pack?"
     (is (is-pack? {#{1 2} #{:a :b}} {#{2 1} :b}))
     (is (is-pack? pack1 pack1-is1))
@@ -418,7 +429,15 @@
     (is (false? (as-toy? {:minimum-age 5 :name :andrew :size 8 :color :red :foo :bar})))
     (is (true? (as-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))
     (is (true? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red})))
-    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar})))))
+    (is (false? (is-toy? {:minimum-age 5 :name "andrew" :size 8 :color :red :foo :bar}))))
+  (testing "defpacked"
+    (is (is-valid-packed? {:a 44 #{2 3 1} :b}))
+    (is (as-valid-packed? {:a 44 #{2 3 1} :b :c :c}))
+    (is (false? (as-valid-packed? {:a 11.1 #{2 3 1} :b :c :c})))
+    (is (false? (is-valid-packed? {:a 44 #{2 3 1} :d})))
+    (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
+    (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
+    (is (as-valid-packed? (assoc valid-packed-defaults :e 44)))))
 
 (deftest asserts-off-nested
   (testing "nested people"

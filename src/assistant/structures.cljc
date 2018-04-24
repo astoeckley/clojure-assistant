@@ -216,3 +216,43 @@
     `(let [pack# ~packmap]
        (assert (map? pack#) (str "defpack did not receive a map for " '~packname ". Instead: " (if (nil? pack#) "nil" pack#)))
        (def ~packname pack#))))
+
+
+;; --------- Provide default values to pack contents ---------
+
+(defn valid-defpack-defaults?
+  "Determines if provided map is in the structure expected by defpacked."
+  [m]
+  (and (map? m)
+       (every? #(and (vector? %) (= 2 (count %))) (vals m))))
+
+(defn make-defpack-map
+  "Makes the map for passing to defpack from the map provided to defpacked."
+  [m]
+  {:pre  [(valid-defpack-defaults? m)]
+   :post [(map? %)]}
+  (into {} (for [[k [pred _]] m]
+             [k pred])))
+
+(defn make-defaults-map
+  "Makes the map of default values from the map provided to defpacked."
+  [m]
+  {:pre  [(valid-defpack-defaults? m)]
+   :post [(map? %)]}
+  (into {} (for [[k [_ v]] m]
+             [k v])))
+
+(defmacro defpacked
+  "Creates a defpack and also a map of default values conforming to the pack spec. This accepts a map where each value must be a vector of a predicate function, as would be provided for keys in defpack, and a default value for that predicate. The ordinary defpack using only the predicates will be generated, with the optional 'true' argument to defpack which creates additional convenience functions (see doc on defpack), as well as a map of the same keys to the default values, with the name of the pack followed by -defaults. 
+
+For example, (defpack-defaults vintage {:age [int? 0] :color [#{:blue :red} :blue]}) will create vars 'vintage' and 'vintage-defaults'.
+
+  As a convenience, the macro will call (is-pack vintage vintage-defaults) after creating these."
+  [packname packmap]
+  {:pre [(symbol? packname)]}
+  (let [default-name (symbol (str packname "-defaults"))]
+    `(let [pack# ~packmap]
+       (assert (valid-defpack-defaults? pack#) (str "Invalid map provided to " '~packname ". Maps provided to defpacked must contain values that are all vectors of 2 items."))
+       (defpack ~packname (make-defpack-map pack#) true)
+       (def ~default-name (make-defaults-map pack#))
+       (is-pack ~packname ~default-name))))
