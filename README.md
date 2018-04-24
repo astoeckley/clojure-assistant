@@ -38,6 +38,6 @@ Sure.
 
 ### License
 
-Copyright © 2017 Andrew Stoeckley and Balcony Studio
+Copyright © 2017 - 2018 Andrew Stoeckley and Balcony Studio
 
 Distributed under the Eclipse Public License, the same as the Clojure language.
