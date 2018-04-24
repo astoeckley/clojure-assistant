@@ -182,13 +182,12 @@
   `(assert-pack ~pack ~v explained-is-pack?))
 
 (defmacro defpack
-  "This is a convenience macro that generates 1 to 3 defs at once. Even if you don't need the defined functions, it can make 
-   code more clear to explicitly show that the map you are creating will be used as a pack. The map is always generated; the 
-   other functions are only created if 'extras' is true.
+  "This is a convenience macro that generates 3 defs at once. Even if you don't need all the defined functions, it can be 
+   more clear to explicitly show that the map you are creating will be used as a pack. 
 
    For example:
 
-   (defpack toy {:minimum-age pos? :color keyword?} true)
+   (defpack toy {:minimum-age pos? :color keyword?})
 
    Will create the following:
 
@@ -198,24 +197,20 @@
 
    It will not create new macros. Because macros which emit other defmacros are tasks reserved for others. 
    (hint: ClojureScript files are supported; you can write a defpack in cljs source.)"
-  [packname packmap & [extras]]
-  {:pre [(symbol? packname) (or (= 'true extras) (= 'false extras) (= nil extras))]}
-  (if extras
-    (let [as-name?  (symbol (str "as-" packname "?"))
-          is-name?  (symbol (str "is-" packname "?"))
-          args-name (gensym "args")]
-      `(let [pack# ~packmap]
-         (assert (map? pack#) (str "defpack did not receive a map for " '~packname ". Instead: " (if (nil? pack#) "nil" pack#)))
-         (def ~packname pack#)
-         (defn ~as-name?
-           [~args-name]
-           (as-pack? ~packname ~args-name))
-         (defn ~is-name?
-           [~args-name]
-           (is-pack? ~packname ~args-name))))
+  [packname packmap]
+  {:pre [(symbol? packname)]}
+  (let [as-name?  (symbol (str "as-" packname "?"))
+        is-name?  (symbol (str "is-" packname "?"))
+        args-name (gensym "args")]
     `(let [pack# ~packmap]
        (assert (map? pack#) (str "defpack did not receive a map for " '~packname ". Instead: " (if (nil? pack#) "nil" pack#)))
-       (def ~packname pack#))))
+       (def ~packname pack#)
+       (defn ~as-name?
+         [~args-name]
+         (as-pack? ~packname ~args-name))
+       (defn ~is-name?
+         [~args-name]
+         (is-pack? ~packname ~args-name)))))
 
 
 ;; --------- Provide default values to pack contents ---------
@@ -253,6 +248,6 @@ For example, (defpacked vintage {:age [int? 0] :color [#{:blue :red} :blue]}) wi
   (let [default-name (symbol (str packname "-defaults"))]
     `(let [pack# ~packmap]
        (assert (valid-defpacked-map? pack#) (str "Invalid map provided to " '~packname ". Maps provided to defpacked must contain values that are all vectors of 2 items."))
-       (defpack ~packname (make-defpack-map pack#) true)
+       (defpack ~packname (make-defpack-map pack#))
        (def ~default-name (make-defaults-map pack#))
        (is-pack ~packname ~default-name))))

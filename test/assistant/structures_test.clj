@@ -35,9 +35,9 @@
 
 (defpack toy {:minimum-age pos? :color keyword?
               :size        #(and (<= % 10) (>= % 5))
-              :name        string?} true)
+              :name        string?})
 
-(defpack toys {:toy1 toy :toy2 toy} true)
+(defpack toys {:toy1 toy :toy2 toy})
 
 (defn map-size-3?
   "Is true if the value is a map with three elements"
@@ -217,7 +217,7 @@
     (is (as-valid-packed? (assoc valid-packed-defaults :e 44)))))
 
 (defpack address {:street string? :city string? :state (every-pred string? #(= 2 (count %)))
-                  :zip    (every-pred string? #(= 5 (count %)))} true)
+                  :zip    (every-pred string? #(= 5 (count %)))})
 
 (def person {:address address
              :name    string?
