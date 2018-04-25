@@ -214,7 +214,8 @@
 
 ;; --------- Validate a value in a nested pack ---------
 
-(defn valid-pack-item?
+;; too many edge cases when nested values are the result of map-structure?s
+#_(defn valid-pack-item?
   "Returns truthy if the provided path exists in the pack and the provided value passes the predicate or pack found there."
   [pack path value]
   (let [pred (get-in pack path)]

@@ -215,7 +215,7 @@
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
     (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
     (is (as-valid-packed? (assoc valid-packed-defaults :e 44))))
-  (testing "valid-pack-item?"
+  #_(testing "valid-pack-item?"
     (is (valid-pack-item? pack1 [:a] 5))
     (is (false? (valid-pack-item? pack1 [:a] "hi")))
     (is (thrown? AssertionError (valid-pack-item? pack1 [:e] 5)))
@@ -450,7 +450,7 @@
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
     (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
     (is (as-valid-packed? (assoc valid-packed-defaults :e 44))))
-  (testing "valid-pack-item?"
+  #_(testing "valid-pack-item?"
     (is (valid-pack-item? pack1 [:a] 5))
     (is (false? (valid-pack-item? pack1 [:a] "hi")))
     (is (valid-pack-item? toys [:toy2 :name] "foo"))
