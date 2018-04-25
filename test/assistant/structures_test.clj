@@ -214,7 +214,19 @@
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :d})))
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
     (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
-    (is (as-valid-packed? (assoc valid-packed-defaults :e 44)))))
+    (is (as-valid-packed? (assoc valid-packed-defaults :e 44))))
+  (testing "valid-pack-item?"
+    (is (valid-pack-item? pack1 [:a] 5))
+    (is (false? (valid-pack-item? pack1 [:a] "hi")))
+    (is (thrown? AssertionError (valid-pack-item? pack1 [:e] 5)))
+    (is (valid-pack-item? toys [:toy2 :name] "foo"))
+    (is (valid-pack-item? {#{2 1} {1 toy}} [#{1 2} 1 :size] 5.5))
+    (is (false? (valid-pack-item? {#{2 1} {1 toy}} [#{1 2} 1 :size] 4)))
+    (is (valid-pack-item? {:a toy} [:a] {:minimum-age 2 :color :red :size 5 :name ""}))
+    (is (false? (valid-pack-item? {:a toy} [:a] {:minimum-age 0 :color :red :size 5 :name ""})))
+    (is (false? (valid-pack-item? {:a toy} [:a] nil)))
+    (is (false? (valid-pack-item? {:a toy} [:a] 0)))
+    (is (thrown? AssertionError (valid-pack-item? {:a toys} [:b] nil)))))
 
 (defpack address {:street string? :city string? :state (every-pred string? #(= 2 (count %)))
                   :zip    (every-pred string? #(= 5 (count %)))})
@@ -437,7 +449,17 @@
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :d})))
     (is (false? (is-valid-packed? {:a 44 #{2 3 1} :b :c :d})))
     (is (= valid-packed-defaults {:a 55 #{1 3 2} :a}))
-    (is (as-valid-packed? (assoc valid-packed-defaults :e 44)))))
+    (is (as-valid-packed? (assoc valid-packed-defaults :e 44))))
+  (testing "valid-pack-item?"
+    (is (valid-pack-item? pack1 [:a] 5))
+    (is (false? (valid-pack-item? pack1 [:a] "hi")))
+    (is (valid-pack-item? toys [:toy2 :name] "foo"))
+    (is (valid-pack-item? {#{2 1} {1 toy}} [#{1 2} 1 :size] 5.5))
+    (is (false? (valid-pack-item? {#{2 1} {1 toy}} [#{1 2} 1 :size] 4)))
+    (is (valid-pack-item? {:a toy} [:a] {:minimum-age 2 :color :red :size 5 :name ""}))
+    (is (false? (valid-pack-item? {:a toy} [:a] {:minimum-age 0 :color :red :size 5 :name ""})))
+    (is (false? (valid-pack-item? {:a toy} [:a] nil)))
+    (is (false? (valid-pack-item? {:a toy} [:a] 0)))))
 
 (deftest asserts-off-nested
   (testing "nested people"

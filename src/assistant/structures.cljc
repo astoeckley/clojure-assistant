@@ -212,6 +212,20 @@
          [~args-name]
          (is-pack? ~packname ~args-name)))))
 
+;; --------- Validate a value in a nested pack ---------
+
+(defn valid-pack-item?
+  "Returns truthy if the provided path exists in the pack and the provided value passes the predicate or pack found there."
+  [pack path value]
+  (let [pred (get-in pack path)]
+    (assert pred (str "The provided path " path " for pack does not exist."))
+    (if (map? pred)
+      (is-pack? pred value)
+      (try
+        (pred value)
+        (catch #?(:clj Exception
+                  :cljs :default)
+            _ false)))))
 
 ;; --------- Provide default values to pack contents ---------
 
