@@ -1,4 +1,4 @@
-;;  Copyright (c) Andrew Stoeckley / Balcony Studio 2017. All rights reserved.
+;;  Copyright (c) Andrew Stoeckley / Balcony Studio 2017 - 2018. All rights reserved.
 
 ;;  The use and distribution terms for this software are covered by the
 ;;  Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -211,22 +211,6 @@
        (defn ~is-name?
          [~args-name]
          (is-pack? ~packname ~args-name)))))
-
-;; --------- Validate a value in a nested pack ---------
-
-;; too many edge cases when nested values are the result of map-structure?s
-#_(defn valid-pack-item?
-  "Returns truthy if the provided path exists in the pack and the provided value passes the predicate or pack found there."
-  [pack path value]
-  (let [pred (get-in pack path)]
-    (assert pred (str "The provided path " path " for pack does not exist."))
-    (if (map? pred)
-      (is-pack? pred value)
-      (try
-        (pred value)
-        (catch #?(:clj Exception
-                  :cljs :default)
-            _ false)))))
 
 ;; --------- Provide default values to pack contents ---------
 
