@@ -9,6 +9,9 @@
     (is (= {:arglist    '[a b c ^int f ^String g i {:keys [a b d], :as ^bool g}],
             :predicates '[(h i) (c d)]}
            (parse-arglist '[a b c (hint int f) (hint String g) (h i) {:keys [a b (c d)] :as (hint bool g)}])))
+    (is (= {:arglist '[{aa :a bb :b ^long cc :cc :as whole}]
+            :predicates '[(string? bb) (foo? whole)]}
+           (parse-arglist '[{aa :a (string? bb) :b (hint long cc) :cc :as (foo? whole)}])))
     (is (= {:arglist [] :predicates []} (parse-arglist '[])))
     (is (= {:arglist '[a] :predicates []} (parse-arglist '[a])))
     (is (= {:arglist '[a b] :predicates []} (parse-arglist '[a b])))
