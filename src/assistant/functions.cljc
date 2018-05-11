@@ -17,7 +17,7 @@
 ;;; and allowing the predicate to appear in the argument vector of the defn or fn directly, including type hints.
 ;;;
 ;;; Instead of defn, use df
-;;; Instead of fn, use lam (as, in lambda)
+;;; Instead of fn, use lam (as in, lambda)
 ;;;
 ;;; In both cases, usage is the same as clojure.core, except that the arglist can inline pre conditions.
 ;;; They do not conflict with additional conditions explicitly provided in an optional pre/post condition map.

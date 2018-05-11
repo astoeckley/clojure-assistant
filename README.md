@@ -1,16 +1,21 @@
 ### Clojure Assistant
 
-Simple but effective validation on any kind of data and types, without any fuss or learning curve.
+Simple but effective validation on any kind of data and types, without any fuss or learning curve. I use this in every project to streamline the inclusion of pre conditions on all functions (named or anonymous), and to provide strict enforcement of values and map structures throughout a codebase. Also offers easy logging of expressions and their evaluations to console or repl. All tools herein work in Clojure and ClojureScript with zero overhead in a production build, and with a simple function-based, data-based syntax that does not rely on any new DSL, fancy magic, or verbose spec composition.
 
-The small amount of code in this library is short and decently documented, and the tests also make it clear. For example, [here is all you need to know about shaping maps](https://github.com/astoeckley/clojure-assistant/blob/master/src/assistant/structures.cljc#L12).
+The small amount of code in this library is short and decently documented, and the tests also make it clear. For example, [here is all you need to know about shaping maps](https://github.com/stoeckley/clojure-assistant/blob/master/src/assistant/structures.cljc#L13).
 
 ### Motivation
+#### (and comparison to clojure.spec)
 
-This library provides tools for validating data in a simple, lightweight manner using ordinary maps and functions, without a DSL or heavy API or extra syntax. It is designed to make it very easy to assert that the data flowing through your Clojure or ClojureScript app is exactly what you expect, using every-day Clojure constructs and without a lot of added code to do this. And it all compiles away at production, with zero run-time overhead.
+I built this tiny library to add much safety without upsetting the terse, dynamic workflow of writing succinct Clojure.
 
-It has similar goals, but with easier use (and fewer features), to Clojure.spec and many other similar libraries. I built this tiny library because I just wanted to easily verify that types are what I expect, and do so without significantly adding to the dynamic and elegant workflow of writing succinct Clojure. I also wanted every "spec" to be confirmed as existing at compile time, something which Clojure.spec does not do out of the box (and has bitten many a developer who mistyped keywords).
+In the absence of static types, I want to easily and quickly validate all data flows in a simple, lightweight manner using ordinary maps and functions, without a DSL or heavy API or extra syntax and verbosity (i.e. clojure.spec). 
 
-Clojure Assistant is just normal maps and functions.
+I also want **compile-time enforcement that my "specs" actually exist and that my typos are actually caught** -- a fundamental expectation of a validation tool which clojure.spec doesn't offer (and has bitten many a developer who mistyped spec keywords and thus experienced passing validations on invalid data!). 
+
+I also want short, targeted error messages if data doesn't conform.
+
+This library addresses these concerns, and makes it easy to assert that all values flowing through a Clojure or ClojureScript app are exactly what you expect, using every-day Clojure constructs and with as little extra code as possible. It all compiles away at production, with zero run-time overhead.
 
 ### Installation
 
@@ -26,10 +31,14 @@ Require in CLJ:
 
 ```[assistant.predicates ...]```
 
+```[assistant.functions ...]```
+
 
 Require macros in CLJS:
 
 ```[assistant.structures :as ass :include-macros true ..(etc)..]```
+
+```[assistant.functions :as funs :include-macros true ..(etc)..]```
 
 
 ### PRs, Issues
