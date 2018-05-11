@@ -11,7 +11,21 @@
   (:require [assistant.structures :refer [is-pack]]
             [assistant.predicates :refer [nil-or?]]))
 
-;;; This file defines macros for removing repitition when making pre conditions for every argument, and allowing the predicate to appear in the argument vector of the defn or fn directly, including type hints
+
+;;; ------------------------------------------------------
+;;; This file defines macros for removing repitition when making pre conditions for function arguments,
+;;; and allowing the predicate to appear in the argument vector of the defn or fn directly, including type hints.
+;;;
+;;; Instead of defn, use dfn
+;;; Instead of fn, use fn
+;;;
+;;; In both cases, usage is the same as clojure.core, except that the arglist can inline pre conditions. They do not conflict
+;;; with additional pre conditions explicitly provided in an optional pre/post condition map. For post conditions, normal usage of
+;;; the pre/post conditions is required.
+;;;
+;;; To see how the arglist is parsed, see parse-arglist below.
+;;; ------------------------------------------------------
+
 
 ;; A convenience for tersely requiring an argument to not be nil
 (def nn #(not (nil? %)))
@@ -66,7 +80,7 @@ the output would be:
       ~@(if has-pre-post? (rest body) body))))
 
 (defmacro dfn
-  "Makes a defn definition, parsing the arglist as described in parse-arglist."
+  "Makes a defn definition, parsing the arglist as described in parse-arglist. As with clojure.core/defn, a docstring and pre/post conditions are optional."
   [fn-name & fn-contents]
   {:pre [(symbol? fn-name)]}
   (assert (seq fn-contents) (str "Incomplete dfn definition for " fn-name))
@@ -80,7 +94,7 @@ the output would be:
     (write-function :defn fn-name docstring args body)))
 
 (defmacro df
-  "Makes a fn definition, parsing the arglist as described in parse-arglist. fn name is optional. Like clojure.core/fn, will not accept a docstring."
+  "Makes a fn definition, parsing the arglist as described in parse-arglist. fn name is optional. Like clojure.core/fn, will not accept a docstring, but pre/post conditions are optional."
   [& fn-contents]
   (assert (seq fn-contents) (str "Incomplete fn definition"))
   (let [fn-name (if (symbol? (first fn-contents)) (first fn-contents) nil)
