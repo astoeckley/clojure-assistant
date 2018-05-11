@@ -20,13 +20,11 @@ the output would be:
         ret        (clojure.walk/prewalk #(if (list? %)
                                             (do (assert (symbol? (last %)))
                                                 (if (= 'hint (first %))
-                                                  (do
-                                                    (assert (= 3 (count %)))
-                                                    (assert (symbol? (second %)))
-                                                    (vary-meta (last %) assoc :tag (second %)))
-                                                  (do
-                                                    (swap! predicates conj %)
-                                                    (last %))))
+                                                  (do (assert (= 3 (count %)))
+                                                      (assert (symbol? (second %)))
+                                                      (vary-meta (last %) assoc :tag (second %)))
+                                                  (do (swap! predicates conj %)
+                                                      (last %))))
                                             %)
                                          arglist)]
     {:arglist ret :predicates @predicates}))
@@ -45,14 +43,13 @@ the output would be:
          (nil-or? string? docstring)
          (vector? args)
          (seq? body)]}
-  (let [leader                       (cond
-                                       (= :defn defn-or-fn) ['defn fn-name]
-                                       (nil? fn-name)       ['fn]
-                                       :else                ['fn fn-name])
+  (let [leader                       (cond (= :defn defn-or-fn) ['defn fn-name]
+                                           (nil? fn-name)       ['fn]
+                                           :else                ['fn fn-name])
         {:keys [arglist predicates]} (parse-arglist args)
         has-pre-post?                (is-pre-or-post? (first body))]
     `(~@leader 
-      ~(or docstring "No docstring provided :(")
+      ~@(if docstring [docstring] [])
       ~arglist
       ~(if has-pre-post? (first body) '(comment "No pre/post conditions."))
       ~@(for [p predicates] `(assert ~p (str "Failed argument for " ~defn-or-fn " " '~fn-name " " '~p)))
@@ -65,11 +62,22 @@ the output would be:
   (assert (seq fn-contents) (str "Incomplete dfn definition for " fn-name))
   (let [docstring (if (string? (first fn-contents)) (first fn-contents) nil)
         args      (if docstring
-                    (do
-                      (assert (vector? (second fn-contents)) (str "No arglist provided after docstring for dfn " fn-name))
-                      (second fn-contents))
-                    (do
-                      (assert (vector? (first fn-contents)) (str "No arglist provided for dfn " fn-name))
-                      (first fn-contents)))
+                    (do (assert (vector? (second fn-contents)) (str "No arglist provided after docstring for dfn " fn-name))
+                        (second fn-contents))
+                    (do (assert (vector? (first fn-contents)) (str "No arglist provided for dfn " fn-name))
+                        (first fn-contents)))
         body      (if docstring (drop 2 fn-contents) (drop 1 fn-contents))]
     (write-function :defn fn-name docstring args body)))
+
+(defmacro df
+  "Makes a fn definition, parsing the arglist as described in parse-arglist. fn name is optional. Like clojure.core/fn, will not accept a docstring."
+  [& fn-contents]
+  (assert (seq fn-contents) (str "Incomplete fn definition"))
+  (let [fn-name (if (symbol? (first fn-contents)) (first fn-contents) nil)
+        args    (if fn-name
+                  (do (assert (vector? (second fn-contents)) (str "No arglist provided for named fn " fn-name))
+                      (second fn-contents))
+                  (do (assert (vector? (first fn-contents)) "No arglist provided for anonymous fn")
+                      (first fn-contents)))
+        body    (if fn-name (drop 2 fn-contents) (drop 1 fn-contents))]
+    (write-function :fn fn-name nil args body)))
