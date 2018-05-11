@@ -21,25 +21,24 @@ This library addresses these concerns, and makes it easy to assert that all valu
 
 Clojars:  
 
-```[nl.balconystudio/clojure-assistant "0.3"]```
+```[nl.balconystudio/clojure-assistant "0.31"]```
 
 Require in CLJ: 
 
 ```[assistant.structures ..(etc)..]```
 
+The other namespaces are:
+
 ```[assistant.asserts ...]```
-
 ```[assistant.predicates ...]```
-
 ```[assistant.functions ...]```
-
+```[assistant.log ...]```
 
 Require macros in CLJS:
 
 ```[assistant.structures :as ass :include-macros true ..(etc)..]```
 
-```[assistant.functions :as funs :include-macros true ..(etc)..]```
-
+(for any namespace which has macros)
 
 ### PRs, Issues
 

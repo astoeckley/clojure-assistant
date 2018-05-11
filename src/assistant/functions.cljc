@@ -22,6 +22,8 @@
 ;;; In both cases, usage is the same as clojure.core, except that the arglist can inline pre conditions.
 ;;; They do not conflict with additional conditions explicitly provided in an optional pre/post condition map.
 ;;; For post conditions, normal usage of the pre/post conditions is required.
+;;; The expressions provided to the arglist are turned directly into assertions at the top of the fn body,
+;;; and thus compile away in builds which disable assertions in Clojure or ClojureScript.
 ;;;
 ;;; To see how the arglist is parsed, see parse-arglist below.
 ;;; ------------------------------------------------------

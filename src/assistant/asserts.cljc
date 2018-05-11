@@ -10,6 +10,7 @@
 (ns assistant.asserts)
 
 ;; The simple tools provided here are all affected by the value of *assert*, which can be used in Clojure and ClojureScript.
+;; When *assert* is off, all forms and their args compile away with no runtime overhead.
 
 ;; This macro allows ClojureScript code to access the compile-time value of *assert*
 (defmacro asserts? [] *assert*)
