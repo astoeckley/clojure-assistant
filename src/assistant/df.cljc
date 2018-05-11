@@ -52,6 +52,7 @@ the output would be:
          (nil-or? string? docstring)
          (vector? args)
          (seq? body)]}
+  (assert (or (= :defn defn-or-fn) (nil? docstring)) "Docstrings are not possible on an anonymous fn")
   (let [leader                       (cond (= :defn defn-or-fn) ['defn fn-name]
                                            (nil? fn-name)       ['fn]
                                            :else                ['fn fn-name])
