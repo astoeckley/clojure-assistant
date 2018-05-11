@@ -11,13 +11,6 @@
 
 ;; The simple tools provided here are all affected by the value of *assert*, which can be used in Clojure and ClojureScript.
 
-;; The tools are:
-;; (asserts?) (when-asserts ...) (log a b c) (logx a b c) (as ...)
-
-;; When *assert* is off:
-;;    For when-asserts, log, logx, all forms and their args compile away with no runtime overhead.
-;;    For 'as', see additional information in its doc string.
-
 ;; This macro allows ClojureScript code to access the compile-time value of *assert*
 (defmacro asserts? [] *assert*)
 
@@ -26,30 +19,6 @@
    In ClojureScript, just set :elide-asserts to true as a compiler flag in your project.clj to turn off these assertions."
   [& forms]
   (when *assert* `(do ~@forms nil)))
-
-(defn log*
-  "Cross-environment logging. JS requires console.log for Chrome Dev Tools assistance. On the Clojure side, see this tip for better printing in multithreaded scenarios:
-
-http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html
-
-Explicitly joined newline character ensures printing from different threads doesn't upset the newlines. Calling flush explicitly assures a flush, while a newline character alone does not."
-  [& logs]
-  #?(:clj (do (print (str (apply str (interpose " " logs)) "\n")) (flush))
-     :cljs (apply js/console.log logs)))
-
-(defmacro log
-  "Logs only when *assert* is true. In CLJS, uses JS console for Dev Tools support."
-  [& logs]
-  (when *assert*
-    `(log* ~@logs)))
-
-(defmacro logx
-  "Log expressions when *assert* is true, each on a line, with the quoted expression followed by its evaluation."
-  [& vs]
-  (when *assert*
-    `(do
-       ~@(for [v vs]
-           `(log* '~v ~v)))))
 
 (defmacro as
   
