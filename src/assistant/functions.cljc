@@ -7,7 +7,7 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns assistant.df
+(ns assistant.functions
   (:require [assistant.structures :refer [is-pack]]
             [assistant.predicates :refer [nil-or?]]))
 
@@ -19,9 +19,9 @@
 ;;; Instead of defn, use df
 ;;; Instead of fn, use lam (as, in lambda)
 ;;;
-;;; In both cases, usage is the same as clojure.core, except that the arglist can inline pre conditions. They do not conflict
-;;; with additional pre conditions explicitly provided in an optional pre/post condition map. For post conditions, normal usage of
-;;; the pre/post conditions is required.
+;;; In both cases, usage is the same as clojure.core, except that the arglist can inline pre conditions.
+;;; They do not conflict with additional conditions explicitly provided in an optional pre/post condition map.
+;;; For post conditions, normal usage of the pre/post conditions is required.
 ;;;
 ;;; To see how the arglist is parsed, see parse-arglist below.
 ;;; ------------------------------------------------------

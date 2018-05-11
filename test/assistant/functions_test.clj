@@ -1,10 +1,10 @@
-(ns assistant.df-test
+(ns assistant.functions-test
   (:require [clojure.test :refer :all]
-            [assistant.df :refer :all]))
+            [assistant.functions :refer :all]))
 
 (set! *print-meta* true)
 
-(deftest df-test
+(deftest functions-test
   (testing "parse-arglist"
     (is (= {:arglist    '[a b c ^int f ^String g i {:keys [a b d], :as ^bool g}],
             :predicates '[(h i) (c d)]}
