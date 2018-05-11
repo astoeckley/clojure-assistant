@@ -2,8 +2,6 @@
   (:require [clojure.test :refer :all]
             [assistant.functions :refer :all]))
 
-(set! *print-meta* true)
-
 (deftest functions-test
   (testing "parse-arglist"
     (is (= {:arglist    '[a b c ^int f ^String g i {:keys [a b d], :as ^bool g}],

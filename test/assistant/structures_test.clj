@@ -415,12 +415,8 @@
     (is (= {} (is-pack pack1 {})))
     (is (nil? (is-pack pack1 nil)))
     (is (= 99 (is-pack pack1 99)))
-    (is (= 5 (binding [*assert* false]
-               (clojure.walk/macroexpand-all '(is-pack pack1 5)))))
-    (is (= '(get {} :a)
-           (binding [*assert* false]
-             (clojure.walk/macroexpand-all 
-              '(is-pack pack1 (get {} :a)))))))
+    (is (= 5 (is-pack pack1 5)))
+    (is (= nil (is-pack pack1 (get {} :a)))))
   (testing "defpack"
     (is (map? toy))
     (is (fn? as-toy?))
