@@ -181,6 +181,11 @@
   [pack v]
   `(assert-pack ~pack ~v explained-is-pack?))
 
+(defmacro isp
+  "identical to is-pack"
+  [pack v]
+  `(assert-pack ~pack ~v explained-is-pack?))
+
 (defmacro defpack
   "This is a convenience macro that generates 3 defs at once. Even if you don't need all the defined functions, it can be 
    more clear to explicitly show that the map you are creating will be used as a pack. 
